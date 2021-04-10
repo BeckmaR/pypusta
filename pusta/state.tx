@@ -5,11 +5,15 @@ Diagram:
 ;
 
 Expression:
-    TransitionExpression
+    TransitionExpression | StateDescriptionExpression
 ;
 
 TransitionExpression:
-    from=StateIdentifier '-->' to=StateIdentifier
+    from=StateIdentifier Arrow to=StateIdentifier
+;
+
+StateDescriptionExpression:
+    state=RegularState ':' description=Text
 ;
 
 StateIdentifier:
@@ -21,3 +25,11 @@ RegularState:
 ;
 
 InitialFinalState: '[*]';
+
+Text:
+    /(.*?)\n/
+;
+
+Arrow:
+    '->' | '-->'
+;
