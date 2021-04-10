@@ -1,0 +1,23 @@
+Diagram:
+    '@startuml'
+    expressions*=Expression
+    '@enduml'
+;
+
+Expression:
+    TransitionExpression
+;
+
+TransitionExpression:
+    from=StateIdentifier '-->' to=StateIdentifier
+;
+
+StateIdentifier:
+    RegularState | InitialFinalState
+;
+
+RegularState:
+    name=ID
+;
+
+InitialFinalState: '[*]';
