@@ -5,7 +5,13 @@ Diagram:
 ;
 
 Expression:
-    TransitionExpression | StateDescriptionExpression | MetaExpression
+    TransitionExpression | StateDescriptionExpression | MetaExpression | CompositeDeclarationExpression
+;
+
+CompositeDeclarationExpression:
+    'state' RegularState '{'
+    expressions*=Expression
+    '}'
 ;
 
 TransitionExpression:
