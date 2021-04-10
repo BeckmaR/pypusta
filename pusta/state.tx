@@ -15,7 +15,7 @@ CompositeDeclarationExpression:
 ;
 
 TransitionExpression:
-    src=StateIdentifier Arrow dest=StateIdentifier
+    src=StateIdentifier Arrow dest=StateIdentifier (':' description=Text)?
 ;
 
 StateDescriptionExpression:

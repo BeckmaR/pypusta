@@ -5,6 +5,6 @@ import pusta
 
 parser = pusta.Pusta()
 
-diagram = parser.parse_file("tests/diagrams/1.pu")
+diagram = parser.parse_file("tests/diagrams/5.pu")
 
 print(diagram)
