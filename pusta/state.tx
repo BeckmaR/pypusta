@@ -17,11 +17,15 @@ StateDescriptionExpression:
 ;
 
 MetaExpression:
-    HideEmptyDescriptionExpression
+    HideEmptyDescriptionExpression | ScaleExpression
 ;
 
 HideEmptyDescriptionExpression:
     'hide empty description'
+;
+
+ScaleExpression:
+    'scale' scale=INT 'width'
 ;
 
 StateIdentifier:
