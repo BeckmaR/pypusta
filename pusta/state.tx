@@ -5,7 +5,7 @@ Diagram:
 ;
 
 Expression:
-    TransitionExpression | StateDescriptionExpression
+    TransitionExpression | StateDescriptionExpression | MetaExpression
 ;
 
 TransitionExpression:
@@ -14,6 +14,14 @@ TransitionExpression:
 
 StateDescriptionExpression:
     state=RegularState ':' description=Text
+;
+
+MetaExpression:
+    HideEmptyDescriptionExpression
+;
+
+HideEmptyDescriptionExpression:
+    'hide empty description'
 ;
 
 StateIdentifier:
