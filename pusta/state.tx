@@ -9,7 +9,7 @@ Expression:
 ;
 
 TransitionExpression:
-    from=StateIdentifier Arrow to=StateIdentifier
+    src=StateIdentifier Arrow dest=StateIdentifier
 ;
 
 StateDescriptionExpression:
