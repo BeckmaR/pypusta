@@ -24,6 +24,11 @@ def test_model(file):
     gs[test_func_name](diagram)
 
 
+def do_test_diagram_arrow_direction(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 4
+
+
 def do_test_diagram_simple_state(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 2

@@ -104,7 +104,7 @@ Text:
 ;
 
 Arrow:
-    '->' | '-->'
+    /-+((up|down|right|left)-)?>/
 ;
 
 HorizontalRegionSeparator: '--';
