@@ -11,8 +11,16 @@ Expression:
 
 CompositeDeclarationExpression:
     'state' name=ID '{'
-    expressions*=Expression
+    regions*=Region
     '}'
+;
+
+Region:
+    expressions*=Expression RegionSeparator?
+;
+
+RegionSeparator:
+    HorizontalRegionSeparator | VerticalRegionSeparator
 ;
 
 TransitionExpression:
@@ -69,3 +77,6 @@ Text:
 Arrow:
     '->' | '-->'
 ;
+
+HorizontalRegionSeparator: '--';
+VerticalRegionSeparator: '||';

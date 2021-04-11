@@ -99,7 +99,7 @@ def do_test_diagram_composite_states_2(diagram):
     sub_transitions = textx.get_children_of_type("TransitionExpression", composites[2])
     assert len(sub_transitions) == 1
 
-    assert composites[2].parent == composites[1]
+    assert composites[2].parent.parent == composites[1]
 
 
 def do_test_diagram_transition_description(diagram):
@@ -134,9 +134,9 @@ def do_test_diagram_composite_states_1(diagram):
     for i, s in enumerate(composites):
         assert s.name == names[i]
 
-    assert composites[1].parent == composites[0]
-    assert composites[2].parent == composites[0]
-    assert composites[4].parent == composites[3]
+    assert composites[1].parent.parent == composites[0]
+    assert composites[2].parent.parent == composites[0]
+    assert composites[4].parent.parent == composites[3]
 
 
 def do_test_diagram_long_state_names(diagram):
@@ -168,3 +168,24 @@ def do_test_diagram_fork_join(diagram):
 
     assert fork_joins[0].type == "<<fork>>"
     assert fork_joins[1].type == "<<join>>"
+
+
+def do_test_diagram_concurrent_state_horizontal(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 10
+
+    composites = textx.get_children_of_type("CompositeDeclarationExpression", diagram._model)
+    assert len(composites) == 1
+
+    comp = composites[0]
+    regions = comp.regions
+    assert len(regions) == 3
+
+    for r in regions:
+        transitions = textx.get_children_of_type("TransitionExpression", r)
+        assert len(transitions) == 3
+
+
+def do_test_diagram_concurrent_state_vertical(diagram):
+    # Diagrams are equal except region separators
+    do_test_diagram_concurrent_state_horizontal(diagram)
