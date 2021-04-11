@@ -29,14 +29,6 @@ ParallelState:
     '}'
 ;
 
-PseudoState:
-    type=PseudoStateType
-;
-
-PseudoStateType:
-    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>' | '<<entryPoint>>' | '<<exitPoint>>'
-;
-
 SimpleState: '';
 
 Region:
@@ -84,7 +76,15 @@ NestedHistoryState:
 ;
 
 RegularState:
-    name=ID
+    name=ID (type=PseudoState)?
+;
+
+PseudoState:
+    type=PseudoStateType
+;
+
+PseudoStateType:
+    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>' | '<<entryPoint>>' | '<<exitPoint>>'
 ;
 
 InitialFinalState: '[*]';
