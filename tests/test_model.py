@@ -45,3 +45,78 @@ def test_diagram_2():
     assert len(descriptions) == 2
     assert descriptions[0].description == "this is a string"
     assert descriptions[1].description == "this is another string"
+
+
+def test_diagram_3():
+    file = os.path.join(diagram_path, "3.pu")
+    diagram = parser.parse_file(file)
+
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 4
+
+    assert transitions[0].src == '[*]'
+    assert transitions[0].dest.name == 'State1'
+
+    assert transitions[1].src.name == 'State1'
+    assert transitions[1].dest == '[*]'
+
+    assert transitions[2].src.name == 'State1'
+    assert transitions[2].dest.name == 'State2'
+
+    assert transitions[3].src.name == 'State2'
+    assert transitions[3].dest == '[*]'
+
+    descriptions = textx.get_children_of_type("StateDescriptionExpression", diagram._model)
+    assert len(descriptions) == 2
+    assert descriptions[0].description == "this is a string"
+    assert descriptions[1].description == "this is another string"
+
+
+def test_diagram_4():
+    file = os.path.join(diagram_path, "4.pu")
+    diagram = parser.parse_file(file)
+
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 9
+
+    composites = textx.get_children_of_type("CompositeDeclarationExpression", diagram._model)
+    assert len(composites) == 3
+
+    assert composites[0].name == "NotShooting"
+    assert composites[1].name == "Configuring"
+    assert composites[2].name == "NewValuePreview"
+
+    sub_transitions = textx.get_children_of_type("TransitionExpression", composites[0])
+    assert len(sub_transitions) == 3
+
+    sub_transitions = textx.get_children_of_type("TransitionExpression", composites[1])
+    assert len(sub_transitions) == 5
+
+    sub_transitions = textx.get_children_of_type("TransitionExpression", composites[2])
+    assert len(sub_transitions) == 1
+
+    assert composites[2].parent == composites[1]
+
+
+def test_diagram_5():
+    file = os.path.join(diagram_path, "5.pu")
+    diagram = parser.parse_file(file)
+
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 9
+
+    expected_descriptions = [
+        None,
+        None,
+        "EvConfig",
+        "EvConfig",
+        None,
+        "EvNewValue",
+        "EvNewValueRejected",
+        "EvNewValueSaved",
+        None
+    ]
+
+    for i, t in enumerate(transitions):
+        assert t.description == expected_descriptions[i]
+
