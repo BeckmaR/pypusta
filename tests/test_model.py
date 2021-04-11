@@ -120,3 +120,22 @@ def test_diagram_5():
     for i, t in enumerate(transitions):
         assert t.description == expected_descriptions[i]
 
+
+def test_diagram_6():
+    file = os.path.join(diagram_path, "6.pu")
+    diagram = parser.parse_file(file)
+
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 2
+
+    composites = textx.get_children_of_type("CompositeDeclarationExpression", diagram._model)
+    assert len(composites) == 5
+
+    names = ["A", "X", "Y", "B", "Z"]
+
+    for i, s in enumerate(composites):
+        assert s.name == names[i]
+
+    assert composites[1].parent == composites[0]
+    assert composites[2].parent == composites[0]
+    assert composites[4].parent == composites[3]
