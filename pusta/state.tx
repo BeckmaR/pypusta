@@ -44,7 +44,7 @@ PseudoStateDeclarationExpression:
 ;
 
 PseudoStateType:
-    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>'
+    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>' | '<<entryPoint>>' | '<<exitPoint>>'
 ;
 
 HideEmptyDescriptionExpression:

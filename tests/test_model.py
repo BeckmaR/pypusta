@@ -210,3 +210,14 @@ def do_test_diagram_pseudostates(diagram):
     assert pseudo_states[1].type == "<<fork>>"
     assert pseudo_states[2].type == "<<join>>"
     assert pseudo_states[3].type == "<<end>>"
+
+
+def do_test_diagram_entry_exit_point(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 7
+
+    pseudo_states = textx.get_children_of_type("PseudoStateDeclarationExpression", diagram._model)
+    assert len(pseudo_states) == 3
+    assert pseudo_states[0].type == "<<entryPoint>>"
+    assert pseudo_states[1].type == "<<entryPoint>>"
+    assert pseudo_states[2].type == "<<exitPoint>>"
