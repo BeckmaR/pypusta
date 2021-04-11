@@ -9,8 +9,8 @@ test_path = os.path.dirname(__file__)
 diagram_path = os.path.join(test_path, "diagrams")
 
 
-def test_diagram_1():
-    file = os.path.join(diagram_path, "1.pu")
+def test_diagram_simple_state():
+    file = os.path.join(diagram_path, "simple_state.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
@@ -23,8 +23,8 @@ def test_diagram_1():
     assert transitions[1].dest == '[*]'
 
 
-def test_diagram_2():
-    file = os.path.join(diagram_path, "2.pu")
+def test_diagram_state_description():
+    file = os.path.join(diagram_path, "state_description.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
@@ -48,8 +48,8 @@ def test_diagram_2():
     assert descriptions[1].description == "this is another string"
 
 
-def test_diagram_3():
-    file = os.path.join(diagram_path, "3.pu")
+def test_diagram_meta_expr_1():
+    file = os.path.join(diagram_path, "meta_expr_1.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
@@ -73,8 +73,8 @@ def test_diagram_3():
     assert descriptions[1].description == "this is another string"
 
 
-def test_diagram_4():
-    file = os.path.join(diagram_path, "4.pu")
+def test_diagram_composite_states_2():
+    file = os.path.join(diagram_path, "composite_states_2.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
@@ -99,8 +99,8 @@ def test_diagram_4():
     assert composites[2].parent == composites[1]
 
 
-def test_diagram_5():
-    file = os.path.join(diagram_path, "5.pu")
+def test_diagram_transition_description():
+    file = os.path.join(diagram_path, "transition_description.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
@@ -122,8 +122,8 @@ def test_diagram_5():
         assert t.description == expected_descriptions[i]
 
 
-def test_diagram_6():
-    file = os.path.join(diagram_path, "6.pu")
+def test_diagram_composite_states_1():
+    file = os.path.join(diagram_path, "composite_states_1.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
@@ -142,8 +142,8 @@ def test_diagram_6():
     assert composites[4].parent == composites[3]
 
 
-def test_diagram_7():
-    file = os.path.join(diagram_path, "7.pu")
+def test_diagram_long_state_names():
+    file = os.path.join(diagram_path, "long_state_names.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
@@ -155,8 +155,8 @@ def test_diagram_7():
     assert alias[0].name == "long1"
 
 
-def test_diagram_8():
-    file = os.path.join(diagram_path, "8.pu")
+def test_diagram_history_states():
+    file = os.path.join(diagram_path, "history_states.pu")
     diagram = parser.parse_file(file)
 
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
