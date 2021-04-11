@@ -163,7 +163,7 @@ def do_test_diagram_fork_join(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 7
 
-    fork_joins = textx.get_children_of_type("ForkDeclarationExpression", diagram._model)
+    fork_joins = textx.get_children_of_type("PseudoStateDeclarationExpression", diagram._model)
     assert len(fork_joins) == 2
 
     assert fork_joins[0].type == "<<fork>>"
@@ -189,3 +189,12 @@ def do_test_diagram_concurrent_state_horizontal(diagram):
 def do_test_diagram_concurrent_state_vertical(diagram):
     # Diagrams are equal except region separators
     do_test_diagram_concurrent_state_horizontal(diagram)
+
+
+def do_test_diagram_choice(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 4
+
+    pseudo_states = textx.get_children_of_type("PseudoStateDeclarationExpression", diagram._model)
+    assert len(pseudo_states) == 1
+    assert pseudo_states[0].type == "<<choice>>"

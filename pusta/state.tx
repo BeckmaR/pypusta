@@ -6,7 +6,7 @@ Diagram:
 
 Expression:
     TransitionExpression | StateDescriptionExpression | MetaExpression | CompositeDeclarationExpression |
-    StateAliasExpression | ForkDeclarationExpression
+    StateAliasExpression | PseudoStateDeclarationExpression
 ;
 
 CompositeDeclarationExpression:
@@ -39,12 +39,12 @@ StateAliasExpression:
     'state' longname=STRING 'as' name=ID
 ;
 
-ForkDeclarationExpression:
-    'state' name=ID type=ForkType
+PseudoStateDeclarationExpression:
+    'state' name=ID type=PseudoStateType
 ;
 
-ForkType:
-    '<<fork>>' | '<<join>>'
+PseudoStateType:
+    '<<fork>>' | '<<join>>' | '<<choice>>'
 ;
 
 HideEmptyDescriptionExpression:
