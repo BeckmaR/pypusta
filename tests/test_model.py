@@ -144,6 +144,11 @@ def do_test_diagram_composite_states_1(diagram):
     assert composites[4].parent.parent == composites[3]
 
 
+def do_test_diagram_line_color(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 7
+
+
 def do_test_diagram_long_state_names(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 11
