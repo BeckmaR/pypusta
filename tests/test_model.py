@@ -165,3 +165,6 @@ def do_test_diagram_fork_join(diagram):
 
     fork_joins = textx.get_children_of_type("ForkDeclarationExpression", diagram._model)
     assert len(fork_joins) == 2
+
+    assert fork_joins[0].type == "<<fork>>"
+    assert fork_joins[1].type == "<<join>>"

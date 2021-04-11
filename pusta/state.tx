@@ -32,7 +32,7 @@ StateAliasExpression:
 ;
 
 ForkDeclarationExpression:
-    'state' name=ID ForkType
+    'state' name=ID type=ForkType
 ;
 
 ForkType:
