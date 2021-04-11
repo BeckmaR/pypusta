@@ -9,7 +9,7 @@ Expression:
 ;
 
 CompositeDeclarationExpression:
-    'state' RegularState '{'
+    'state' name=ID '{'
     expressions*=Expression
     '}'
 ;
