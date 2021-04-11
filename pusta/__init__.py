@@ -24,6 +24,7 @@ class Pusta:
         return Diagram(self._parser.model_from_str(s))
 
     def parse_file(self, p):
+        _logger.info(f"Parsing file {p}")
         return Diagram(self._parser.model_from_file(p))
 
 
