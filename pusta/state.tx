@@ -84,7 +84,7 @@ PseudoState:
 ;
 
 PseudoStateType:
-    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>' | '<<entryPoint>>' | '<<exitPoint>>'
+    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>' | '<<entryPoint>>' | '<<exitPoint>>' | '<<inputPin>>' | '<<outputPin>>'
 ;
 
 InitialFinalState: '[*]';

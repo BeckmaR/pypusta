@@ -226,6 +226,17 @@ def do_test_diagram_entry_exit_point(diagram):
     assert pseudo_states[2].type == "<<exitPoint>>"
 
 
+def do_test_diagram_entry_exit_pin(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 7
+
+    pseudo_states = textx.get_children_of_type("PseudoState", diagram._model)
+    assert len(pseudo_states) == 3
+    assert pseudo_states[0].type == "<<inputPin>>"
+    assert pseudo_states[1].type == "<<inputPin>>"
+    assert pseudo_states[2].type == "<<outputPin>>"
+
+
 def do_test_diagram_blank_state_decl(diagram):
     # Same diagram except including blank state declaration
     do_test_diagram_entry_exit_point(diagram)
