@@ -40,7 +40,11 @@ ScaleExpression:
 ;
 
 StateIdentifier:
-    RegularState | InitialFinalState
+    NestedHistoryState | RegularState | InitialFinalState | HistoryState
+;
+
+NestedHistoryState:
+    parent_name=/[^\d\W]\w*/ history=HistoryState
 ;
 
 RegularState:
@@ -48,6 +52,7 @@ RegularState:
 ;
 
 InitialFinalState: '[*]';
+HistoryState: '[H' is_deep ?= '*' ']';
 
 Text:
     /(.*?)\n/

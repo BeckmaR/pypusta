@@ -151,6 +151,18 @@ def test_diagram_7():
 
     alias = textx.get_children_of_type("StateAliasExpression", diagram._model)
     assert len(alias) == 1
-    logging.debug(alias[0].longname)
     assert alias[0].longname == r"Accumulate Enough Data\nLong State Name"
     assert alias[0].name == "long1"
+
+
+def test_diagram_8():
+    file = os.path.join(diagram_path, "8.pu")
+    diagram = parser.parse_file(file)
+
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 14
+
+    assert transitions[8].dest.is_deep is False
+
+    assert transitions[10].dest.parent_name == "State3"
+    assert transitions[10].dest.history.is_deep is True
