@@ -5,15 +5,39 @@ Diagram:
 ;
 
 Expression:
-    TransitionExpression | StateDescriptionExpression | MetaExpression | CompositeDeclarationExpression |
-    StateAliasExpression | PseudoStateDeclarationExpression
+    TransitionExpression | StateDescriptionExpression | MetaExpression | StateDeclarationExpression |
+    StateAliasExpression
 ;
 
-CompositeDeclarationExpression:
-    'state' name=ID '{'
+StateDeclarationExpression:
+    'state' name=ID type=StateType
+;
+
+StateType:
+    CompositeState | ParallelState | PseudoState | SimpleState
+;
+
+CompositeState:
+    '{'
+    expressions*=Expression
+    '}'
+;
+
+ParallelState:
+    '{'
     regions*=Region
     '}'
 ;
+
+PseudoState:
+    type=PseudoStateType
+;
+
+PseudoStateType:
+    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>' | '<<entryPoint>>' | '<<exitPoint>>'
+;
+
+SimpleState: '';
 
 Region:
     expressions*=Expression RegionSeparator?
@@ -41,10 +65,6 @@ StateAliasExpression:
 
 PseudoStateDeclarationExpression:
     'state' name=ID type=PseudoStateType
-;
-
-PseudoStateType:
-    '<<fork>>' | '<<join>>' | '<<choice>>' | '<<end>>' | '<<entryPoint>>' | '<<exitPoint>>'
 ;
 
 HideEmptyDescriptionExpression:

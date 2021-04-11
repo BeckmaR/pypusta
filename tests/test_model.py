@@ -83,12 +83,12 @@ def do_test_diagram_composite_states_2(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 9
 
-    composites = textx.get_children_of_type("CompositeDeclarationExpression", diagram._model)
+    composites = textx.get_children_of_type("CompositeState", diagram._model)
     assert len(composites) == 3
 
-    assert composites[0].name == "NotShooting"
-    assert composites[1].name == "Configuring"
-    assert composites[2].name == "NewValuePreview"
+    assert composites[0].parent.name == "NotShooting"
+    assert composites[1].parent.name == "Configuring"
+    assert composites[2].parent.name == "NewValuePreview"
 
     sub_transitions = textx.get_children_of_type("TransitionExpression", composites[0])
     assert len(sub_transitions) == 3
@@ -126,13 +126,13 @@ def do_test_diagram_composite_states_1(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 2
 
-    composites = textx.get_children_of_type("CompositeDeclarationExpression", diagram._model)
+    composites = textx.get_children_of_type("CompositeState", diagram._model)
     assert len(composites) == 5
 
     names = ["A", "X", "Y", "B", "Z"]
 
     for i, s in enumerate(composites):
-        assert s.name == names[i]
+        assert s.parent.name == names[i]
 
     assert composites[1].parent.parent == composites[0]
     assert composites[2].parent.parent == composites[0]
@@ -163,7 +163,7 @@ def do_test_diagram_fork_join(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 7
 
-    fork_joins = textx.get_children_of_type("PseudoStateDeclarationExpression", diagram._model)
+    fork_joins = textx.get_children_of_type("PseudoState", diagram._model)
     assert len(fork_joins) == 2
 
     assert fork_joins[0].type == "<<fork>>"
@@ -174,7 +174,10 @@ def do_test_diagram_concurrent_state_horizontal(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 10
 
-    composites = textx.get_children_of_type("CompositeDeclarationExpression", diagram._model)
+    composites = textx.get_children_of_type("CompositeState", diagram._model)
+    assert len(composites) == 0
+
+    composites = textx.get_children_of_type("ParallelState", diagram._model)
     assert len(composites) == 1
 
     comp = composites[0]
@@ -195,7 +198,7 @@ def do_test_diagram_choice(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 4
 
-    pseudo_states = textx.get_children_of_type("PseudoStateDeclarationExpression", diagram._model)
+    pseudo_states = textx.get_children_of_type("PseudoState", diagram._model)
     assert len(pseudo_states) == 1
     assert pseudo_states[0].type == "<<choice>>"
 
@@ -204,7 +207,7 @@ def do_test_diagram_pseudostates(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 9
 
-    pseudo_states = textx.get_children_of_type("PseudoStateDeclarationExpression", diagram._model)
+    pseudo_states = textx.get_children_of_type("PseudoState", diagram._model)
     assert len(pseudo_states) == 4
     assert pseudo_states[0].type == "<<choice>>"
     assert pseudo_states[1].type == "<<fork>>"
@@ -216,7 +219,18 @@ def do_test_diagram_entry_exit_point(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 7
 
-    pseudo_states = textx.get_children_of_type("PseudoStateDeclarationExpression", diagram._model)
+    pseudo_states = textx.get_children_of_type("PseudoState", diagram._model)
+    assert len(pseudo_states) == 3
+    assert pseudo_states[0].type == "<<entryPoint>>"
+    assert pseudo_states[1].type == "<<entryPoint>>"
+    assert pseudo_states[2].type == "<<exitPoint>>"
+
+
+def do_test_diagram_blank_state_decl(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 7
+
+    pseudo_states = textx.get_children_of_type("PseudoState", diagram._model)
     assert len(pseudo_states) == 3
     assert pseudo_states[0].type == "<<entryPoint>>"
     assert pseudo_states[1].type == "<<entryPoint>>"
