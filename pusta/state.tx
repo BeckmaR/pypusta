@@ -5,7 +5,8 @@ Diagram:
 ;
 
 Expression:
-    TransitionExpression | StateDescriptionExpression | MetaExpression | CompositeDeclarationExpression
+    TransitionExpression | StateDescriptionExpression | MetaExpression | CompositeDeclarationExpression |
+    StateAliasExpression
 ;
 
 CompositeDeclarationExpression:
@@ -24,6 +25,10 @@ StateDescriptionExpression:
 
 MetaExpression:
     HideEmptyDescriptionExpression | ScaleExpression
+;
+
+StateAliasExpression:
+    'state' longname=STRING 'as' name=ID
 ;
 
 HideEmptyDescriptionExpression:

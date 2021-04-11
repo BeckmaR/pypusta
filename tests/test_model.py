@@ -1,6 +1,7 @@
 import pusta
 import os
 import textx
+import logging
 
 parser = pusta.Pusta()
 
@@ -139,3 +140,17 @@ def test_diagram_6():
     assert composites[1].parent == composites[0]
     assert composites[2].parent == composites[0]
     assert composites[4].parent == composites[3]
+
+
+def test_diagram_7():
+    file = os.path.join(diagram_path, "7.pu")
+    diagram = parser.parse_file(file)
+
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 11
+
+    alias = textx.get_children_of_type("StateAliasExpression", diagram._model)
+    assert len(alias) == 1
+    logging.debug(alias[0].longname)
+    assert alias[0].longname == r"Accumulate Enough Data\nLong State Name"
+    assert alias[0].name == "long1"
