@@ -10,11 +10,11 @@ Expression:
 ;
 
 StateDeclarationExpression:
-    'state' name=ID type=StateType
+    'state' name=ID (type=StateType)?
 ;
 
 StateType:
-    CompositeState | ParallelState | PseudoState | SimpleState
+    CompositeState | ParallelState | PseudoState
 ;
 
 CompositeState:
@@ -28,8 +28,6 @@ ParallelState:
     regions*=Region
     '}'
 ;
-
-SimpleState: '';
 
 Region:
     expressions*=Expression RegionSeparator?
