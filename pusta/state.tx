@@ -6,7 +6,7 @@ Diagram:
 
 Expression:
     TransitionExpression | StateDescriptionExpression | MetaExpression | StateDeclarationExpression |
-    StateAliasExpression
+    StateAliasExpression | NoteExpression
 ;
 
 StateDeclarationExpression:
@@ -54,6 +54,31 @@ MetaExpression:
 StateAliasExpression:
     'state' longname=STRING 'as' name=ID
 ;
+
+NoteExpression:
+    ShortNote | FloatingNote | LongNote
+;
+
+ShortNote:
+    'note' direction=/(\w+)\b/ 'of' target=ID ':' text=Text
+;
+
+FloatingNote:
+    'note' text=STRING ('as' target=ID)?
+;
+
+LongNote:
+    'note' direction=/(\w+)\b/ 'of' target=ID
+    lines*=NoteLine
+    NoteEnd
+;
+
+NoteLine:
+    !NoteEnd Text
+;
+
+NoteEnd: 'end note';
+
 
 PseudoStateDeclarationExpression:
     'state' name=ID type=PseudoStateType

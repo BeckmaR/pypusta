@@ -274,3 +274,8 @@ def do_test_diagram_inline_pseudostate(diagram):
     assert pseudo_states[2].type == "<<exitPoint>>"
     assert pseudo_states[2].parent.name == "exitA"
     assert pseudo_states[2].parent.parent.__class__.__name__ == "TransitionExpression"
+
+
+def do_test_diagram_notes(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 2
