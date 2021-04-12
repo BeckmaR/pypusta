@@ -2,6 +2,7 @@ import textx
 import textx.export
 import os
 import logging
+import pusta.builder
 
 _logger = logging.getLogger(__name__)
 
@@ -12,6 +13,11 @@ class Diagram:
 
     def export(self, path):
         textx.export.model_export(self._model, path)
+
+    def transform(self):
+        builder = pusta.builder.StatechartBuilder()
+        builder.consume_diagram(self)
+        return builder.statechart
 
 
 class Pusta:
@@ -27,4 +33,7 @@ class Pusta:
         _logger.info(f"Parsing file {p}")
         return Diagram(self._parser.model_from_file(p))
 
-
+    def transform(self, diagram):
+        builder = pusta.builder.StatechartBuilder()
+        builder.consume_diagram(diagram)
+        return builder.statechart
