@@ -279,3 +279,8 @@ def do_test_diagram_inline_pseudostate(diagram):
 def do_test_diagram_notes(diagram):
     transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
     assert len(transitions) == 2
+
+
+def do_test_diagram_inline_color(diagram):
+    transitions = textx.get_children_of_type("TransitionExpression", diagram._model)
+    assert len(transitions) == 3

@@ -10,7 +10,7 @@ Expression:
 ;
 
 StateDeclarationExpression:
-    'state' name=ID (type=StateType)?
+    'state' name=ID (color=/#\w*\b/)? (type=StateType)?
 ;
 
 StateType:
