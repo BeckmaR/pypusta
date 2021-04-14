@@ -60,3 +60,47 @@ def do_test_transform_simple_state(statechart):
     assert len(transitions) == 1
 
     assert transitions[0].destination == statechart.final_state
+
+
+def do_test_transform_state_description(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> State1
+        State State1:
+            Label:
+                this is a string
+                this is another string
+            Transition -> FinalState
+            Transition -> State2
+        State State2:
+            Transition -> FinalState
+        FinalState
+    """
+    logger.debug(str(statechart))
+    states = statechart.get_states()
+    assert len(states) == 4
+
+    transitions = statechart.get_contents_of_type(Transition)
+    assert len(transitions) == 4
+
+    assert statechart.initial_state is not None
+    assert statechart.final_state is not None
+
+    transitions = statechart.initial_state.get_transitions()
+    assert len(transitions) == 1
+    dest_state = transitions[0].destination
+    assert dest_state.name == "State1"
+    assert dest_state.label == "this is a string\nthis is another string"
+
+    transitions = dest_state.get_transitions()
+    assert len(transitions) == 2
+    dest_state = transitions[0].destination
+    assert dest_state == statechart.final_state
+    dest_state = transitions[1].destination
+    assert dest_state.name == "State2"
+
+    transitions = dest_state.get_transitions()
+    assert len(transitions) == 1
+
+    assert transitions[0].destination == statechart.final_state

@@ -61,3 +61,9 @@ class StatechartBuilder:
         t.source = src_state
         t.destination = dst_state
 
+    def consume_StateDescriptionExpression(self, expression):
+        state = self.get_or_add_state(expression.state.name)
+        if state.label:
+            state.label += '\n' + expression.description
+        else:
+            state.label = expression.description

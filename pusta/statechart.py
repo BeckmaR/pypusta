@@ -107,8 +107,45 @@ class Label(BaseNode):
             return list()
         return self._label.splitlines()
 
+    def __iadd__(self, other: str):
+        self._label += other
+        return self
 
-class State(NamedNode):
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return self._label == other
+        if isinstance(other, Label):
+            return self._label == other._label
+        return False
+
+
+class LabeledNode(BaseNode):
+    _label = None
+
+    def __init__(self, label: str = None):
+        super().__init__()
+        self.label = label
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, value):
+        if self._label:
+            self._children.remove(self._label)
+        if value is None:
+            self._label = None
+            return
+        if isinstance(value, str):
+            value = Label(value)
+        if not isinstance(value, Label):
+            raise TypeError(f"{value!r} is not a Label")
+        self.add_child(value)
+        self._label = value
+
+
+class State(NamedNode, LabeledNode):
     def get_transitions(self) -> List['Transition']:
         return self.get_children_of_type(Transition)
 
