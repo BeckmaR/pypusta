@@ -1,11 +1,11 @@
 import logging
-from typing import Optional, List, Set
-
+from typing import Optional, List, Iterable
 
 class BaseNode:
     def __init__(self):
         self._parent: Optional[BaseNode] = None
-        self._children: Set[BaseNode] = set()
+        self._children: List[BaseNode] = list()
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     @property
     def parent(self) -> 'BaseNode':
@@ -16,7 +16,7 @@ class BaseNode:
         self._parent = parent
 
     def add_child(self, child: 'BaseNode'):
-        self._children.add(child)
+        self._children.append(child)
         child.parent = self
 
     def get_children_of_type(self, cls) -> List:
@@ -43,14 +43,30 @@ class BaseNode:
     def _str_header(self):
         return f"{self.__class__.__name__}"
 
+    def _str_children(self):
+        return sorted(self._children)
+
     def __str__(self) -> str:
         s = self._str_header()
-        if self._children:
+        children = self._str_children()
+        if children:
             s += ":\n"
-            for child in self._children:
-                for line in str(child).splitlines(keepends=True):
-                    s += "  " + line
-        return s
+            for child in children:
+                for line in str(child).splitlines():
+                    s += f"    {line}\n"
+        return s.strip()
+
+    def _cmp(self, other):
+        return self.__class__.__name__ < other.__class__.__name__
+
+    def __lt__(self, other):
+        my_index = _sort_index(self.__class__)
+        other_index = _sort_index(other.__class__)
+
+        if my_index == other_index:
+            return self._cmp(other)
+
+        return my_index < other_index
 
 
 class NamedNode(BaseNode):
@@ -63,31 +79,43 @@ class NamedNode(BaseNode):
         return self._name
 
     def _str_header(self):
-        return f"{self.__class__.__name__} {self._name}"
+        return f"{self.__class__.__name__} {self.fqn()}"
+
+    def fqn(self):
+        if isinstance(self.parent, NamedNode):
+            return f"{self.parent.fqn()}.{self.name}"
+        else:
+            return self.name
+
+    def _cmp(self, other):
+        if isinstance(other, NamedNode):
+            return self.fqn() < other.fqn()
+        else:
+            return super()._cmp(other)
 
 
-class LabeledNode(BaseNode):
+class Label(BaseNode):
     def __init__(self, label: str):
         super().__init__()
         self._label = label
 
-    @property
-    def label(self):
-        return self._label
+    def _str_header(self):
+        return self.__class__.__name__
+
+    def _str_children(self):
+        if not self._label:
+            return list()
+        return self._label.splitlines()
 
 
-class AbstractState(BaseNode):
+class State(NamedNode):
     def get_transitions(self) -> List['Transition']:
         return self.get_children_of_type(Transition)
 
 
-class State(NamedNode, AbstractState):
-    pass
-
-
-class Transition(LabeledNode):
+class Transition(BaseNode):
     def __init__(self, label=None):
-        super().__init__(label)
+        super().__init__()
         self._src = None
         self._dst = None
 
@@ -109,18 +137,21 @@ class Transition(LabeledNode):
     def destination(self, dst: State):
         self._dst = dst
 
+    def _str_header(self):
+        return f"{self.__class__.__name__} -> {self.destination.fqn()}"
+
 
 class CompositeState(State):
     def get_regions(self) -> List['Region']:
         return self.get_children_of_type(Region)
 
 
-class PseudoState(AbstractState):
-    pass
+class PseudoState(State):
+    def __init__(self):
+        super().__init__(self.__class__.__name__)
 
-
-class NamedPseudoState(State, PseudoState):
-    pass
+    def _str_header(self):
+        return self.name
 
 
 class InitialState(PseudoState):
@@ -131,11 +162,11 @@ class FinalState(PseudoState):
     pass
 
 
-class Choice(NamedPseudoState):
+class Choice(State):
     pass
 
 
-class Fork(NamedPseudoState):
+class Fork(State):
     pass
 
 
@@ -150,8 +181,8 @@ class Statechart(BaseNode):
         self._initial_state = None
         self._final_state = None
 
-    def get_states(self) -> List[AbstractState]:
-        return self.get_children_of_type(AbstractState)
+    def get_states(self) -> List[State]:
+        return self.get_children_of_type(State)
 
     @property
     def initial_state(self) -> InitialState:
@@ -174,3 +205,30 @@ class Statechart(BaseNode):
             self.add_child(final)
             self._final_state = final
         return self._final_state
+
+
+_cls_sort_order = [Label, InitialState, State, FinalState, NamedNode, BaseNode, object]
+
+
+def _merge(mros):
+    if not any(mros): # all lists are empty
+        return []  # base case
+    for candidate, *_ in mros:
+        if all(candidate not in tail for _, *tail in mros):
+            return [candidate] + _merge([tail if head is candidate else [head, *tail]
+                                        for head, *tail in mros])
+    else:
+        raise TypeError("No legal mro")
+
+
+def _mro(cls):
+    if cls is object:
+        return [object]
+    return [cls] + _merge([_mro(base) for base in cls.__bases__])
+
+
+def _sort_index(cls):
+    mro = _mro(cls)
+    for supercls in mro:
+        if supercls in _cls_sort_order:
+            return _cls_sort_order.index(supercls)
