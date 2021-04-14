@@ -1,13 +1,15 @@
 import pusta
 from pusta.statechart import *
 import os
-import textx
 import logging
+from inspect import getdoc
 
 parser = pusta.Pusta()
 
 test_path = os.path.dirname(__file__)
 diagram_path = os.path.join(test_path, "diagrams")
+
+logger = logging.getLogger(__name__)
 
 
 def test_trafo(file):
@@ -20,12 +22,25 @@ def test_trafo(file):
     test_func_name = f"do_test_transform_{name}"
 
     if test_func_name in gs:
+        test_func = gs[test_func_name]
         diagram = parser.parse_file(file)
         statechart = diagram.transform()
+        docstring = getdoc(test_func)
+        if docstring:
+            assert str(statechart) == docstring
         gs[test_func_name](statechart)
 
 
 def do_test_transform_simple_state(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> State1
+        State State1:
+            Transition -> FinalState
+        FinalState
+    """
+    logger.debug(statechart)
     states = statechart.get_states()
     assert len(states) == 3
 
