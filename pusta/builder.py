@@ -8,6 +8,11 @@ class StatechartBuilder:
         self._statechart = Statechart()
         self._states: Dict[str, State] = dict()
         self._logger = logging.getLogger(self.__class__.__name__)
+        self._active_parent = self._statechart
+
+    @staticmethod
+    def tname(o):
+        return o.__class__.__name__
 
     @property
     def statechart(self):
@@ -15,7 +20,7 @@ class StatechartBuilder:
 
     def add_state(self, name: str) -> State:
         s = State(name)
-        self._statechart.add_child(s)
+        self._active_parent.add_child(s)
         self._states[name] = s
         return s
 
@@ -32,14 +37,17 @@ class StatechartBuilder:
 
     def consume_diagram(self, diagram):
         for expression in diagram._model.expressions:
-            clsname = expression.__class__.__name__
-            self._logger.debug(f"Consuming {clsname}")
-            consumer_name = f"consume_{clsname}"
-            consumer = getattr(self, consumer_name, None)
-            if not consumer:
-                self._logger.error(f"No consumer for {clsname}!")
-            else:
-                consumer(expression)
+            self.consume_expression(expression)
+
+    def consume_expression(self, expression):
+        clsname = expression.__class__.__name__
+        self._logger.debug(f"Consuming {clsname}")
+        consumer_name = f"consume_{clsname}"
+        consumer = getattr(self, consumer_name, None)
+        if not consumer:
+            self._logger.error(f"No consumer for {clsname}!")
+        else:
+            consumer(expression)
 
     def consume_TransitionExpression(self, transition):
         src = transition.src
@@ -67,3 +75,18 @@ class StatechartBuilder:
             state.label += '\n' + expression.description
         else:
             state.label = expression.description
+
+    def consume_StateDeclarationExpression(self, expression):
+        state_name = expression.name
+        type = expression.type
+        tname = self.tname(type)
+        if tname == "CompositeState":
+            state = State(state_name)
+            self._active_parent.add_child(state)
+            self._states[state_name] = state
+            prev_parent = self._active_parent
+            self._active_parent = state
+            for expr in type.expressions:
+                self.consume_expression(expr)
+            self._active_parent = prev_parent
+

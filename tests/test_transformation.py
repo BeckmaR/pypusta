@@ -104,3 +104,16 @@ def do_test_transform_state_description(statechart):
     assert len(transitions) == 1
 
     assert transitions[0].destination == statechart.final_state
+
+
+def do_test_transform_composite_states_1(statechart):
+    """
+    Statechart:
+        State A:
+            State X:
+                Transition -> B.Z
+            State Y
+        State B:
+            State Z:
+                Transition -> A.Y
+    """

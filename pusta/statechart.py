@@ -79,7 +79,7 @@ class NamedNode(BaseNode):
         return self._name
 
     def _str_header(self):
-        return f"{self.__class__.__name__} {self.fqn()}"
+        return f"{self.__class__.__name__} {self.name}"
 
     def fqn(self):
         if isinstance(self.parent, NamedNode):
@@ -149,6 +149,9 @@ class State(NamedNode, LabeledNode):
     def get_transitions(self) -> List['Transition']:
         return self.get_children_of_type(Transition)
 
+    def get_regions(self) -> List['Region']:
+        return self.get_children_of_type(Region)
+
 
 class Transition(BaseNode):
     def __init__(self, label=None):
@@ -178,11 +181,6 @@ class Transition(BaseNode):
         return f"{self.__class__.__name__} -> {self.destination.fqn()}"
 
 
-class CompositeState(State):
-    def get_regions(self) -> List['Region']:
-        return self.get_children_of_type(Region)
-
-
 class PseudoState(State):
     def __init__(self):
         super().__init__(self.__class__.__name__)
@@ -207,7 +205,7 @@ class Fork(State):
     pass
 
 
-class Region(BaseNode):
+class Region(NamedNode):
     def get_states(self) -> List[State]:
         return self.get_children_of_type(State)
 
