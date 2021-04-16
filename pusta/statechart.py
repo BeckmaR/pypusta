@@ -206,9 +206,9 @@ class State(NamedNode, LabeledNode):
         return self.get_children_of_type(Region)
 
 
-class Transition(BaseNode):
+class Transition(LabeledNode):
     def __init__(self, label=None):
-        super().__init__()
+        super().__init__(label)
         self._src = None
         self._dst = None
 

@@ -69,7 +69,7 @@ class StatechartBuilder:
             dst_state = self._active_parent.create_final_state()
         else:
             dst_state = self.get_or_add_state(dst)
-        t = Transition()
+        t = Transition(transition.description)
         t.source = src_state
         t.destination = dst_state
 

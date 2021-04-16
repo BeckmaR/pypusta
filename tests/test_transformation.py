@@ -194,3 +194,41 @@ def do_test_transform_blank_state_decl(statechart):
                     Transition -> Somp.0.exitA
 
     """
+
+
+def do_test_transform_transition_description(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> NotShooting
+        State Configuring:
+            Transition -> NotShooting.0.Idle:
+                Label:
+                    EvConfig
+            Region 0:
+                InitialState:
+                    Transition -> Configuring.0.NewValueSelection
+                State NewValuePreview:
+                    Transition -> Configuring.0.NewValueSelection:
+                        Label:
+                            EvNewValueRejected
+                    Transition -> Configuring.0.NewValueSelection:
+                        Label:
+                            EvNewValueSaved
+                    Region 0:
+                        State State1:
+                            Transition -> Configuring.0.NewValuePreview.0.State2
+                        State State2
+                State NewValueSelection:
+                    Transition -> Configuring.0.NewValuePreview:
+                        Label:
+                            EvNewValue
+        State NotShooting:
+            Region 0:
+                InitialState:
+                    Transition -> NotShooting.0.Idle
+                State Idle:
+                    Transition -> Configuring:
+                        Label:
+                            EvConfig
+    """
