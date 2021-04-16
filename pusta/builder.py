@@ -21,6 +21,7 @@ class StatechartBuilder:
     def add_state(self, name: str) -> State:
         s = State(name)
         self._active_parent.add_child(s)
+        r = Region('0')
         self._states[name] = s
         return s
 
@@ -29,15 +30,18 @@ class StatechartBuilder:
             self.add_state(name)
         return self._states[name]
 
-    def add_state_to(self, parent_name: str, name: str) -> State:
-        parent = self._states[parent_name]
-        s = State(name)
-        parent.add_child(s)
-        return s
+    def after_transformation_cleanup(self):
+        return self.remove_empty_regions()
+
+    def remove_empty_regions(self):
+        for r in self._statechart.get_contents_of_type(Region):
+            if len(r.children) == 0:
+                r.parent.remove_child(r)
 
     def consume_diagram(self, diagram):
         for expression in diagram._model.expressions:
             self.consume_expression(expression)
+        self.after_transformation_cleanup()
 
     def consume_expression(self, expression):
         clsname = expression.__class__.__name__
@@ -54,7 +58,7 @@ class StatechartBuilder:
         if not isinstance(src, str):
             src = src.name
         if src == "[*]":
-            src_state = self._statechart.create_initial_state()
+            src_state = self._active_parent.create_initial_state()
         else:
             src_state = self.get_or_add_state(src)
 
@@ -62,7 +66,7 @@ class StatechartBuilder:
         if not isinstance(dst, str):
             dst = dst.name
         if dst == "[*]":
-            dst_state = self._statechart.create_final_state()
+            dst_state = self._active_parent.create_final_state()
         else:
             dst_state = self.get_or_add_state(dst)
         t = Transition()
@@ -72,7 +76,7 @@ class StatechartBuilder:
     def consume_StateDescriptionExpression(self, expression):
         state = self.get_or_add_state(expression.state.name)
         if state.label:
-            state.label += '\n' + expression.description
+            state.label.append_line(expression.description)
         else:
             state.label = expression.description
 
@@ -80,13 +84,24 @@ class StatechartBuilder:
         state_name = expression.name
         type = expression.type
         tname = self.tname(type)
+
+        if not state_name in self._states:
+            state = self.add_state(state_name)
+        else:
+            state = self._states[state_name]
+            if state.parent != self._active_parent:
+                state.parent.remove_child(state)
+                self._active_parent.add_child(state)
+
         if tname == "CompositeState":
-            state = State(state_name)
-            self._active_parent.add_child(state)
-            self._states[state_name] = state
+            r = Region('0')
+            state.add_child(r)
             prev_parent = self._active_parent
-            self._active_parent = state
+            self._active_parent = r
             for expr in type.expressions:
                 self.consume_expression(expr)
             self._active_parent = prev_parent
+
+    def consume_ScaleExpression(self, expression):
+        pass
 

@@ -55,6 +55,10 @@ def do_test_transform_simple_state(statechart):
 
     dest_state = transitions[0].destination
     assert dest_state.name == "State1"
+    siblings = dest_state.siblings
+    assert len(siblings) == 2
+    assert statechart.initial_state in siblings
+    assert statechart.final_state in siblings
 
     transitions = dest_state.get_transitions()
     assert len(transitions) == 1
@@ -110,10 +114,40 @@ def do_test_transform_composite_states_1(statechart):
     """
     Statechart:
         State A:
-            State X:
-                Transition -> B.Z
-            State Y
+            Region 0:
+                State X:
+                    Transition -> B.0.Z
+                State Y
         State B:
-            State Z:
-                Transition -> A.Y
+            Region 0:
+                State Z:
+                    Transition -> A.0.Y
+    """
+
+
+def do_test_transform_composite_states_2(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> NotShooting
+        State Configuring:
+            Transition -> NotShooting.0.Idle
+            Region 0:
+                InitialState:
+                    Transition -> Configuring.0.NewValueSelection
+                State NewValuePreview:
+                    Transition -> Configuring.0.NewValueSelection
+                    Transition -> Configuring.0.NewValueSelection
+                    Region 0:
+                        State State1:
+                            Transition -> Configuring.0.NewValuePreview.0.State2
+                        State State2
+                State NewValueSelection:
+                    Transition -> Configuring.0.NewValuePreview
+        State NotShooting:
+            Region 0:
+                InitialState:
+                    Transition -> NotShooting.0.Idle
+                State Idle:
+                    Transition -> Configuring
     """

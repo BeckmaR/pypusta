@@ -13,11 +13,30 @@ class BaseNode:
 
     @parent.setter
     def parent(self, parent):
+        if parent and self._parent:
+            raise ValueError(f"Object {self!r} already has a parent: {self._parent!r}")
         self._parent = parent
 
+    @property
+    def children(self):
+        return list(self._children)
+
     def add_child(self, child: 'BaseNode'):
+        if child in self._children:
+            raise ValueError(f"Object {self!r} already has child {child!r}")
         self._children.append(child)
         child.parent = self
+
+    def remove_child(self, child: 'BaseNode'):
+        self._children.remove(child)
+        child.parent = None
+
+    @property
+    def siblings(self) -> List['BaseNode']:
+        if not self._parent:
+            return []
+        pc = self._parent._children
+        return list(filter(lambda c: c is not self, pc))
 
     def get_children_of_type(self, cls) -> List:
         return list(filter(lambda o: isinstance(o, cls), self._children))
@@ -107,8 +126,8 @@ class Label(BaseNode):
             return list()
         return self._label.splitlines()
 
-    def __iadd__(self, other: str):
-        self._label += other
+    def append_line(self, other: str):
+        self._label += '\n' + other
         return self
 
     def __eq__(self, other):
@@ -127,7 +146,7 @@ class LabeledNode(BaseNode):
         self.label = label
 
     @property
-    def label(self):
+    def label(self) -> Label:
         return self._label
 
     @label.setter
@@ -143,6 +162,38 @@ class LabeledNode(BaseNode):
             raise TypeError(f"{value!r} is not a Label")
         self.add_child(value)
         self._label = value
+
+
+class StateContainer(BaseNode):
+    def __init__(self):
+        super().__init__()
+        self._initial_state = None
+        self._final_state = None
+
+    def get_states(self) -> List['State']:
+        return self.get_children_of_type(State)
+
+    @property
+    def initial_state(self) -> 'InitialState':
+        return self._initial_state
+
+    def create_initial_state(self):
+        if not self._initial_state:
+            insta = InitialState()
+            self.add_child(insta)
+            self._initial_state = insta
+        return self._initial_state
+
+    @property
+    def final_state(self) -> 'FinalState':
+        return self._final_state
+
+    def create_final_state(self):
+        if not self._final_state:
+            final = FinalState()
+            self.add_child(final)
+            self._final_state = final
+        return self._final_state
 
 
 class State(NamedNode, LabeledNode):
@@ -205,44 +256,15 @@ class Fork(State):
     pass
 
 
-class Region(NamedNode):
-    def get_states(self) -> List[State]:
-        return self.get_children_of_type(State)
+class Region(NamedNode, StateContainer):
+    pass
 
 
-class Statechart(BaseNode):
-    def __init__(self):
-        super().__init__()
-        self._initial_state = None
-        self._final_state = None
-
-    def get_states(self) -> List[State]:
-        return self.get_children_of_type(State)
-
-    @property
-    def initial_state(self) -> InitialState:
-        return self._initial_state
-
-    def create_initial_state(self):
-        if not self._initial_state:
-            insta = InitialState()
-            self.add_child(insta)
-            self._initial_state = insta
-        return self._initial_state
-
-    @property
-    def final_state(self) -> FinalState:
-        return self._final_state
-
-    def create_final_state(self):
-        if not self._final_state:
-            final = FinalState()
-            self.add_child(final)
-            self._final_state = final
-        return self._final_state
+class Statechart(StateContainer):
+    pass
 
 
-_cls_sort_order = [Label, InitialState, State, FinalState, NamedNode, BaseNode, object]
+_cls_sort_order = [Label, Transition, Region, InitialState, State, FinalState, NamedNode, BaseNode, object]
 
 
 def _merge(mros):
