@@ -139,11 +139,13 @@ class Label(BaseNode):
 
 
 class LabeledNode(BaseNode):
-    _label = None
-
     def __init__(self, label: str = None):
         super().__init__()
-        self.label = label
+        if label:
+            self._label = Label(label)
+            self.add_child(self._label)
+        else:
+            self._label = None
 
     @property
     def label(self) -> Label:
