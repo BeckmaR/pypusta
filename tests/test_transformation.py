@@ -155,3 +155,18 @@ def do_test_transform_composite_states_2(statechart):
     assert len(statechart.children) == 3
 
     assert len(statechart.get_contents_of_type(Transition)) == 9
+
+
+def do_test_transform_arrow_direction(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> First
+        State First:
+            Transition -> Second
+        State Last
+        State Second:
+            Transition -> Third
+        State Third:
+            Transition -> Last
+    """
