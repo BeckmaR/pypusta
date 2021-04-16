@@ -39,9 +39,13 @@ class StatechartBuilder:
                 r.parent.remove_child(r)
 
     def consume_diagram(self, diagram):
-        for expression in diagram._model.expressions:
-            self.consume_expression(expression)
-        self.after_transformation_cleanup()
+        try:
+            for expression in diagram._model.expressions:
+                self.consume_expression(expression)
+            self.after_transformation_cleanup()
+        except Exception:
+            self._logger.exception("Exception during diagram transformation")
+            raise
 
     def consume_expression(self, expression):
         clsname = expression.__class__.__name__
@@ -63,12 +67,13 @@ class StatechartBuilder:
             src_state = self.get_or_add_state(src)
 
         dst = transition.dest
-        if not isinstance(dst, str):
-            dst = dst.name
         if dst == "[*]":
             dst_state = self._active_parent.create_final_state()
         else:
-            dst_state = self.get_or_add_state(dst)
+            if dst.type:
+                dst_state = self.create_pseudo_state(dst.name, dst.type.type)
+            else:
+                dst_state = self.get_or_add_state(dst.name)
         t = Transition(transition.description)
         t.source = src_state
         t.destination = dst_state
@@ -95,13 +100,12 @@ class StatechartBuilder:
         return r
 
     def create_pseudo_state(self, name: str, type: str):
-        if type == "<<entryPoint>>":
+        if type in ["<<entryPoint>>", "<<inputPin>>"]:
             state = EntryPoint(name)
-        elif type == "<<exitPoint>>":
+        elif type in ["<<exitPoint>>", "<<outputPin>>"]:
             state = ExitPoint(name)
         else:
-            self._logger.error(f"Pseudo state type {type} not handled!")
-            return
+            raise ValueError(f"Pseudo state type {type} not handled!")
 
         self._active_parent.add_child(state)
 
@@ -113,7 +117,7 @@ class StatechartBuilder:
             old_state.parent.remove_child(old_state)
 
         self._states[name] = state
-
+        return state
 
     def consume_StateDeclarationExpression(self, expression):
         state_name = expression.name
