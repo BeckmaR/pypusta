@@ -192,7 +192,29 @@ def do_test_transform_blank_state_decl(statechart):
                     Transition -> Somp.0.sin2
                 State sin2:
                     Transition -> Somp.0.exitA
+    """
 
+
+def do_test_transform_entry_exit_point(statechart):
+    """
+        Statechart:
+            InitialState:
+                Transition -> Somp.0.entry1
+            State Foo
+            State Foo1:
+                Transition -> Somp.0.entry2
+            State Somp:
+                Region 0:
+                    EntryPoint entry1:
+                        Transition -> Somp.0.sin
+                    EntryPoint entry2:
+                        Transition -> Somp.0.sin
+                    ExitPoint exitA:
+                        Transition -> Foo
+                    State sin:
+                        Transition -> Somp.0.sin2
+                    State sin2:
+                        Transition -> Somp.0.exitA
     """
 
 
