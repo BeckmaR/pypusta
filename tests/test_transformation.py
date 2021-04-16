@@ -151,3 +151,7 @@ def do_test_transform_composite_states_2(statechart):
                 State Idle:
                     Transition -> Configuring
     """
+
+    assert len(statechart.children) == 3
+
+    assert len(statechart.get_contents_of_type(Transition)) == 9
