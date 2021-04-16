@@ -80,27 +80,57 @@ class StatechartBuilder:
         else:
             state.label = expression.description
 
+    def create_composite_state(self, name):
+        if not name in self._states:
+            state = self.add_state(name)
+        else:
+            state = self._states[name]
+            if state.parent != self._active_parent:
+                state.parent.remove_child(state)
+                self._active_parent.add_child(state)
+
+        r = Region('0')
+        state.add_child(r)
+        self._active_parent = r
+        return r
+
+    def create_pseudo_state(self, name: str, type: str):
+        if type == "<<entryPoint>>":
+            state = EntryPoint(name)
+        elif type == "<<exitPoint>>":
+            state = ExitPoint(name)
+        else:
+            self._logger.error(f"Pseudo state type {type} not handled!")
+            return
+
+        self._active_parent.add_child(state)
+
+        if name in self._states:
+            old_state = self._states[name]
+            for c in old_state.children:
+                old_state.remove_child(c)
+                state.add_child(c)
+            old_state.parent.remove_child(old_state)
+
+        self._states[name] = state
+
+
     def consume_StateDeclarationExpression(self, expression):
         state_name = expression.name
         type = expression.type
         tname = self.tname(type)
 
-        if not state_name in self._states:
-            state = self.add_state(state_name)
-        else:
-            state = self._states[state_name]
-            if state.parent != self._active_parent:
-                state.parent.remove_child(state)
-                self._active_parent.add_child(state)
-
         if tname == "CompositeState":
-            r = Region('0')
-            state.add_child(r)
             prev_parent = self._active_parent
+            r = self.create_composite_state(state_name)
             self._active_parent = r
             for expr in type.expressions:
                 self.consume_expression(expr)
             self._active_parent = prev_parent
+        elif tname == "PseudoState":
+            self.create_pseudo_state(state_name, type.type)
+        else:
+            self._logger.error(f"State type {tname} not handled!")
 
     def consume_ScaleExpression(self, expression):
         pass

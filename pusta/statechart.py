@@ -258,6 +258,14 @@ class Fork(State):
     pass
 
 
+class EntryPoint(State):
+    pass
+
+
+class ExitPoint(State):
+    pass
+
+
 class Region(NamedNode, StateContainer):
     pass
 
