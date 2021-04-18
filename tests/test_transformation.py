@@ -353,41 +353,50 @@ def do_test_transform_long_state_names(statechart):
 
 
 def do_test_transform_pseudostates(statechart):
-    r"""
+    """
     Statechart:
         InitialState:
             Transition -> choice1:
                 Label:
-                    from start\nto choice
+                    from start
+                    to choice
         Choice choice1:
             Transition -> fork1:
                 Label:
-                    from choice\nto fork
+                    from choice
+                    to fork
             Transition -> join2:
                 Label:
-                    from choice\nto join
+                    from choice
+                    to join
             Transition -> FinalState:
                 Label:
-                    from choice\nto end
+                    from choice
+                    to end
         Fork fork1:
             Transition -> State1:
                 Label:
-                    from fork\nto state
+                    from fork
+                    to state
             Transition -> State2:
                 Label:
-                    from fork\nto state
+                    from fork
+                    to state
         Fork join2:
             Transition -> FinalState:
                 Label:
-                    from join\nto end
+                    from join
+                    to end
         State State1:
             Transition -> FinalState:
                 Label:
-                    from state\nto end
+                    from state
+                    to end
         State State2:
             Transition -> join2:
                 Label:
-                    from state\nto join
+                    from state
+                    to join
         FinalState
     """
 

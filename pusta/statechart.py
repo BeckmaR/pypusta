@@ -116,6 +116,8 @@ class NamedNode(BaseNode):
 class Label(BaseNode):
     def __init__(self, label: str):
         super().__init__()
+        if isinstance(label, str):
+            label = label.replace(r'\n', '\n')
         self._label = label
 
     def _str_header(self):
