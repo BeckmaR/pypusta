@@ -4,6 +4,8 @@ import os
 import logging
 from inspect import getdoc
 
+import pytest
+
 parser = pusta.Pusta()
 
 test_path = os.path.dirname(__file__)
@@ -29,6 +31,8 @@ def test_trafo(file):
         if docstring:
             assert str(statechart) == docstring
         gs[test_func_name](statechart)
+    else:
+        pytest.skip(f"{test_func_name} not available")
 
 
 def do_test_transform_simple_state(statechart):
