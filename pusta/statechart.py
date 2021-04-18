@@ -108,7 +108,7 @@ class NamedNode(BaseNode):
 
     def _cmp(self, other):
         if isinstance(other, NamedNode):
-            return self.fqn() < other.fqn()
+            return self.fqn().upper() < other.fqn().upper()
         else:
             return super()._cmp(other)
 
