@@ -304,3 +304,49 @@ def do_test_transform_transition_description(statechart):
                         Label:
                             EvConfig
     """
+
+
+def do_test_transform_long_state_names(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> State1
+        State State1:
+            Transition -> State2:
+                Label:
+                    Succeeded
+            Transition -> FinalState:
+                Label:
+                    Aborted
+        State State2:
+            Transition -> State3:
+                Label:
+                    Succeeded
+            Transition -> FinalState:
+                Label:
+                    Aborted
+        State State3:
+            Transition -> State3:
+                Label:
+                    Failed
+            Transition -> FinalState:
+                Label:
+                    Succeeded / Save Result
+            Transition -> FinalState:
+                Label:
+                    Aborted
+            Region 0:
+                InitialState:
+                    Transition -> State3.0.long1
+                State long1:
+                    Label:
+                        Just a test
+                    Transition -> State3.0.long1:
+                        Label:
+                            New Data
+                    Transition -> State3.0.ProcessData:
+                        Label:
+                            Enough Data
+                State ProcessData
+        FinalState
+    """

@@ -136,6 +136,9 @@ class StatechartBuilder:
         else:
             self._logger.error(f"State type {tname} not handled!")
 
+    def consume_StateAliasExpression(self, expression):
+        self.add_state(expression.name)
+
     def consume_ScaleExpression(self, expression):
         pass
 
