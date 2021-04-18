@@ -350,3 +350,44 @@ def do_test_transform_long_state_names(statechart):
                 State ProcessData
         FinalState
     """
+
+
+def do_test_transform_pseudostates(statechart):
+    r"""
+    Statechart:
+        InitialState:
+            Transition -> choice1:
+                Label:
+                    from start\nto choice
+        Choice choice1:
+            Transition -> fork1:
+                Label:
+                    from choice\nto fork
+            Transition -> join2:
+                Label:
+                    from choice\nto join
+            Transition -> FinalState:
+                Label:
+                    from choice\nto end
+        Fork fork1:
+            Transition -> State1:
+                Label:
+                    from fork\nto state
+            Transition -> State2:
+                Label:
+                    from fork\nto state
+        Fork join2:
+            Transition -> FinalState:
+                Label:
+                    from join\nto end
+        State State1:
+            Transition -> FinalState:
+                Label:
+                    from state\nto end
+        State State2:
+            Transition -> join2:
+                Label:
+                    from state\nto join
+        FinalState
+    """
+

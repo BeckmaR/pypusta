@@ -104,6 +104,14 @@ class StatechartBuilder:
             state = EntryPoint(name)
         elif type in ["<<exitPoint>>", "<<outputPin>>"]:
             state = ExitPoint(name)
+        elif type == "<<choice>>":
+            state = Choice(name)
+        elif type in ["<<fork>>", "<<join>>"]:
+            state = Fork(name)
+        elif type == "<<end>>":
+            state = self._active_parent.create_final_state()
+            self._states[name] = state
+            return state
         else:
             raise ValueError(f"Pseudo state type {type} not handled!")
 
