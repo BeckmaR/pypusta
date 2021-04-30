@@ -400,3 +400,42 @@ def do_test_transform_pseudostates(statechart):
         FinalState
     """
 
+
+def do_test_transform_choice(statechart):
+    """
+    Statechart:
+        Choice c:
+            Transition -> MinorId:
+                Label:
+                    [Id <= 10]
+            Transition -> MajorId:
+                Label:
+                    [Id > 10]
+        State Idle:
+            Transition -> ReqId
+        State MajorId
+        State MinorId
+        State ReqId:
+            Transition -> c
+
+    """
+
+
+def do_test_transform_fork_join(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> fork_state
+        Fork fork_state:
+            Transition -> State2
+            Transition -> State3
+        Fork join_state:
+            Transition -> State4
+        State State2:
+            Transition -> join_state
+        State State3:
+            Transition -> join_state
+        State State4:
+            Transition -> FinalState
+        FinalState
+    """
