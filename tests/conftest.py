@@ -1,8 +1,8 @@
-import pytest
 import os
 
 _path = os.path.dirname(__file__)
 _diagrams = os.path.join(_path, "diagrams")
+
 
 def pytest_generate_tests(metafunc):
     if "file" in metafunc.fixturenames:

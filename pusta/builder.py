@@ -21,12 +21,11 @@ class StatechartBuilder:
     def add_state(self, name: str) -> State:
         s = State(name)
         self._active_parent.add_child(s)
-        r = Region('0')
         self._states[name] = s
         return s
 
     def get_or_add_state(self, name: str) -> State:
-        if not name in self._states:
+        if name not in self._states:
             self.add_state(name)
         return self._states[name]
 
@@ -86,7 +85,7 @@ class StatechartBuilder:
             state.label = expression.description
 
     def create_composite_state(self, name):
-        if not name in self._states:
+        if name not in self._states:
             state = self.add_state(name)
         else:
             state = self._states[name]
@@ -149,4 +148,3 @@ class StatechartBuilder:
 
     def consume_ScaleExpression(self, expression):
         pass
-
