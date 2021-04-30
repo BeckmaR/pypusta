@@ -1,5 +1,6 @@
 import logging
-from typing import Optional, List, Iterable
+from typing import Optional, List
+
 
 class BaseNode:
     def __init__(self):
@@ -280,7 +281,7 @@ _cls_sort_order = [Label, Transition, Region, InitialState, State, FinalState, N
 
 
 def _merge(mros):
-    if not any(mros): # all lists are empty
+    if not any(mros):  # all lists are empty
         return []  # base case
     for candidate, *_ in mros:
         if all(candidate not in tail for _, *tail in mros):

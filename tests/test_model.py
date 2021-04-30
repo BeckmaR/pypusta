@@ -1,7 +1,6 @@
 import pusta
 import os
 import textx
-import logging
 
 parser = pusta.Pusta()
 

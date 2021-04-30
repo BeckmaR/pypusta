@@ -290,6 +290,7 @@ def do_test_transform_expansions(statechart):
                     Transition -> Somp.0.exitA
     """
 
+
 def do_test_transform_transition_description(statechart):
     """
     Statechart:
