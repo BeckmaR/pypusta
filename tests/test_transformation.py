@@ -462,3 +462,38 @@ def do_test_transform_fork_join(statechart):
             Transition -> FinalState
         FinalState
     """
+
+
+def do_test_transform_notes(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> Active
+        State Active:
+            Transition -> Inactive
+        State Inactive
+    """
+
+
+def do_test_transform_line_color(statechart):
+    """
+    Statechart:
+        State S1:
+            Transition -> S2
+            Transition -> S3
+            Transition -> S4
+            Transition -> S5
+        State S2
+        State S3
+        State S4
+        State S5
+        State X1:
+            Transition -> X2
+        State X2
+        State Y1:
+            Transition -> Y2
+        State Y2
+        State Z1:
+            Transition -> Z2
+        State Z2
+    """
