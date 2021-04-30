@@ -520,3 +520,20 @@ def do_test_transform_inline_color(statechart):
                 State Schedule
                 State Trends
     """
+
+
+def do_test_transform_meta_expr_1(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> State1
+        State State1:
+            Label:
+                this is a string
+                this is another string
+            Transition -> FinalState
+            Transition -> State2
+        State State2:
+            Transition -> FinalState
+        FinalState
+    """
