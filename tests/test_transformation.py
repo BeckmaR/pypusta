@@ -28,8 +28,8 @@ def test_trafo(file):
         diagram = parser.parse_file(file)
         statechart = diagram.transform()
         docstring = getdoc(test_func)
-        if docstring:
-            assert str(statechart) == docstring
+        assert docstring is not None
+        assert str(statechart) == docstring
         gs[test_func_name](statechart)
     else:
         pytest.skip(f"{test_func_name} not available")
