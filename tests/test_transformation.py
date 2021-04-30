@@ -497,3 +497,26 @@ def do_test_transform_line_color(statechart):
             Transition -> Z2
         State Z2
     """
+
+
+def do_test_transform_inline_color(statechart):
+    """
+    Statechart:
+        State CurrentSite:
+            Region 0:
+                State AlarmSupression
+                State HardwareSetup:
+                    Region 0:
+                        State Controller:
+                            Transition -> CurrentSite.0.HardwareSetup.0.Devices
+                        State Devices
+                        State Site:
+                            Transition -> CurrentSite.0.HardwareSetup.0.Controller
+                State PresentationSetup:
+                    Region 0:
+                        State Groups:
+                            Transition -> CurrentSite.0.PresentationSetup.0.PlansAndGraphics
+                        State PlansAndGraphics
+                State Schedule
+                State Trends
+    """

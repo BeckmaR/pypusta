@@ -129,8 +129,10 @@ class StatechartBuilder:
     def consume_StateDeclarationExpression(self, expression):
         state_name = expression.name
         type = expression.type
-        tname = self.tname(type)
+        if not type:
+            self.get_or_add_state(state_name)
 
+        tname = self.tname(type)
         if tname == "CompositeState":
             prev_parent = self._active_parent
             r = self.create_composite_state(state_name)
