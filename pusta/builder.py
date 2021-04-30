@@ -143,7 +143,7 @@ class StatechartBuilder:
         elif tname == "PseudoState":
             self.create_pseudo_state(state_name, type.type)
         else:
-            self._logger.error(f"State type {tname} not handled!")
+            self._logger.error(f"State type {tname} of state {state_name} not handled!")
 
     def consume_StateAliasExpression(self, expression):
         self.add_state(expression.name)
