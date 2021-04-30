@@ -100,9 +100,9 @@ class StatechartBuilder:
         return r
 
     def create_pseudo_state(self, name: str, type: str):
-        if type in ["<<entryPoint>>", "<<inputPin>>"]:
+        if type in ["<<entryPoint>>", "<<inputPin>>", "<<expansionInput>>"]:
             state = EntryPoint(name)
-        elif type in ["<<exitPoint>>", "<<outputPin>>"]:
+        elif type in ["<<exitPoint>>", "<<outputPin>>", "<<expansionOutput>>"]:
             state = ExitPoint(name)
         elif type == "<<choice>>":
             state = Choice(name)
