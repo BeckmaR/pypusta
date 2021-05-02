@@ -165,7 +165,7 @@ def do_test_diagram_history_states(diagram):
     assert transitions[8].dest.is_deep is False
 
     assert transitions[10].dest.parent_name == "State3"
-    assert transitions[10].dest.history.is_deep is True
+    assert transitions[10].dest.is_deep is True
 
 
 def do_test_diagram_fork_join(diagram):

@@ -91,11 +91,7 @@ ScaleExpression:
 ;
 
 StateIdentifier:
-    NestedHistoryState | RegularState | InitialFinalState | HistoryState
-;
-
-NestedHistoryState:
-    parent_name=/[^\d\W]\w*/ history=HistoryState
+    HistoryState | RegularState | InitialFinalState
 ;
 
 RegularState:
@@ -120,7 +116,7 @@ PseudoStateType:
 ;
 
 InitialFinalState: '[*]';
-HistoryState: '[H' is_deep ?= '*' ']';
+HistoryState: (parent_name=/[^\d\W]\w*/)? '[H' is_deep ?= '*' ']';
 
 Text:
     /(.*?)\n/

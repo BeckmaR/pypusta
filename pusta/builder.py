@@ -56,7 +56,16 @@ class StatechartBuilder:
         else:
             consumer(expression)
 
-    def create_history_state(self, state, parent):
+    def create_history_state(self, state):
+        if state.parent_name:
+            parent_state = self.get_or_add_state(state.parent_name)
+            regions = parent_state.get_regions()
+            if len(regions) > 1:
+                raise Exception("Can't transform history state in parent state with more than one region")
+            parent = regions[0]
+        else:
+            parent = self._active_parent
+
         if state.is_deep:
             return parent.create_deep_history_state()
         else:
@@ -72,7 +81,7 @@ class StatechartBuilder:
         elif src_type == "RegularState":
             src_state = self.get_or_add_state(src.name)
         elif src_type == "HistoryState":
-            src_state = self.create_history_state(dst, self._active_parent)
+            src_state = self.create_history_state(src)
         if not src_state:
             raise TypeError(f"Source state type {src_type} of state {src} not handled!")
 
@@ -88,13 +97,7 @@ class StatechartBuilder:
             else:
                 dst_state = self.get_or_add_state(dst.name)
         elif dst_type == "HistoryState":
-            dst_state = self.create_history_state(dst, self._active_parent)
-        elif dst_type == "NestedHistoryState":
-            parent_state = self.get_or_add_state(dst.parent_name)
-            regions = parent_state.get_regions()
-            if len(regions) > 1:
-                raise Exception("Can't transform history state in parent state with more than one region")
-            dst_state = self.create_history_state(dst.history, regions[0])
+            dst_state = self.create_history_state(dst)
         if not dst_state:
             raise TypeError(f"Destination state type {dst_type} of state {dst} not handled!")
 
