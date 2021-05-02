@@ -126,6 +126,17 @@ class StatechartBuilder:
         self._active_parent = r
         return r
 
+    def create_parallel_state(self, name):
+        if name not in self._states:
+            state = self.add_state(name)
+        else:
+            state = self._states[name]
+            if state.parent != self._active_parent:
+                state.parent.remove_child(state)
+                self._active_parent.add_child(state)
+
+        return state
+
     def create_pseudo_state(self, name: str, type: str):
         if type in ["<<entryPoint>>", "<<inputPin>>", "<<expansionInput>>"]:
             state = EntryPoint(name)
@@ -168,6 +179,16 @@ class StatechartBuilder:
             for expr in type.expressions:
                 self.consume_expression(expr)
             self._active_parent = prev_parent
+        elif tname == "ParallelState":
+            prev_parent = self._active_parent
+            pstate = self.create_parallel_state(state_name)
+
+            for i, r in enumerate(type.regions):
+                region = Region(str(i))
+                pstate.add_child(region)
+                self._active_parent = region
+                for expr in r.expressions:
+                    self.consume_expression(expr)
         elif tname == "PseudoState":
             self.create_pseudo_state(state_name, type.type)
         else:

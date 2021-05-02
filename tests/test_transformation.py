@@ -594,3 +594,87 @@ def do_test_transform_history_states(statechart):
                 State ProcessData
         FinalState
     """
+
+
+def do_test_transform_concurrent_state_horizontal(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> Active
+        State Active:
+            Region 0:
+                InitialState:
+                    Transition -> Active.0.NumLockOff
+                State NumLockOff:
+                    Transition -> Active.0.NumLockOn:
+                        Label:
+                            EvNumLockPressed
+                State NumLockOn:
+                    Transition -> Active.0.NumLockOff:
+                        Label:
+                            EvNumLockPressed
+            Region 1:
+                InitialState:
+                    Transition -> Active.1.CapsLockOff
+                State CapsLockOff:
+                    Transition -> Active.1.CapsLockOn:
+                        Label:
+                            EvCapsLockPressed
+                State CapsLockOn:
+                    Transition -> Active.1.CapsLockOff:
+                        Label:
+                            EvCapsLockPressed
+            Region 2:
+                InitialState:
+                    Transition -> Active.2.ScrollLockOff
+                State ScrollLockOff:
+                    Transition -> Active.2.ScrollLockOn:
+                        Label:
+                            EvCapsLockPressed
+                State ScrollLockOn:
+                    Transition -> Active.2.ScrollLockOff:
+                        Label:
+                            EvCapsLockPressed
+    """
+
+
+def do_test_transform_concurrent_state_vertical(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> Active
+        State Active:
+            Region 0:
+                InitialState:
+                    Transition -> Active.0.NumLockOff
+                State NumLockOff:
+                    Transition -> Active.0.NumLockOn:
+                        Label:
+                            EvNumLockPressed
+                State NumLockOn:
+                    Transition -> Active.0.NumLockOff:
+                        Label:
+                            EvNumLockPressed
+            Region 1:
+                InitialState:
+                    Transition -> Active.1.CapsLockOff
+                State CapsLockOff:
+                    Transition -> Active.1.CapsLockOn:
+                        Label:
+                            EvCapsLockPressed
+                State CapsLockOn:
+                    Transition -> Active.1.CapsLockOff:
+                        Label:
+                            EvCapsLockPressed
+            Region 2:
+                InitialState:
+                    Transition -> Active.2.ScrollLockOff
+                State ScrollLockOff:
+                    Transition -> Active.2.ScrollLockOn:
+                        Label:
+                            EvCapsLockPressed
+                State ScrollLockOn:
+                    Transition -> Active.2.ScrollLockOff:
+                        Label:
+                            EvCapsLockPressed
+    """
