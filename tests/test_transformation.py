@@ -537,3 +537,60 @@ def do_test_transform_meta_expr_1(statechart):
             Transition -> FinalState
         FinalState
     """
+
+
+def do_test_transform_history_states(statechart):
+    """
+    Statechart:
+        InitialState:
+            Transition -> State1
+        State State1:
+            Transition -> State2:
+                Label:
+                    Succeeded
+            Transition -> FinalState:
+                Label:
+                    Aborted
+        State State2:
+            Transition -> State3:
+                Label:
+                    Succeeded
+            Transition -> FinalState:
+                Label:
+                    Aborted
+            Transition -> State3.0.HistoryState:
+                Label:
+                    Resume
+            Transition -> State3.0.DeepHistoryState:
+                Label:
+                    DeepResume
+        State State3:
+            Transition -> State2:
+                Label:
+                    Pause
+            Transition -> State3:
+                Label:
+                    Failed
+            Transition -> FinalState:
+                Label:
+                    Succeeded / Save Result
+            Transition -> FinalState:
+                Label:
+                    Aborted
+            Region 0:
+                InitialState:
+                    Transition -> State3.0.long1
+                DeepHistoryState
+                HistoryState
+                State long1:
+                    Label:
+                        Just a test
+                    Transition -> State3.0.long1:
+                        Label:
+                            New Data
+                    Transition -> State3.0.ProcessData:
+                        Label:
+                            Enough Data
+                State ProcessData
+        FinalState
+    """

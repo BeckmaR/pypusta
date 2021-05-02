@@ -174,6 +174,8 @@ class StateContainer(BaseNode):
         super().__init__()
         self._initial_state = None
         self._final_state = None
+        self._history_state = None
+        self._deep_history_state = None
 
     def get_states(self) -> List['State']:
         return self.get_children_of_type(State)
@@ -199,6 +201,28 @@ class StateContainer(BaseNode):
             self.add_child(final)
             self._final_state = final
         return self._final_state
+
+    @property
+    def history_state(self) -> 'HistoryState':
+        return self._history_state
+
+    def create_history_state(self):
+        if not self._history_state:
+            hist = HistoryState()
+            self.add_child(hist)
+            self._history_state = hist
+        return self._history_state
+
+    @property
+    def deep_history_state(self) -> 'DeepHistoryState':
+        return self._deep_history_state
+
+    def create_deep_history_state(self):
+        if not self._deep_history_state:
+            hist = DeepHistoryState()
+            self.add_child(hist)
+            self._deep_history_state = hist
+        return self._deep_history_state
 
 
 class State(NamedNode, LabeledNode):
@@ -250,6 +274,14 @@ class InitialState(PseudoState):
 
 
 class FinalState(PseudoState):
+    pass
+
+
+class HistoryState(PseudoState):
+    pass
+
+
+class DeepHistoryState(PseudoState):
     pass
 
 

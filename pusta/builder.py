@@ -56,23 +56,48 @@ class StatechartBuilder:
         else:
             consumer(expression)
 
+    def create_history_state(self, state, parent):
+        if state.is_deep:
+            return parent.create_deep_history_state()
+        else:
+            return parent.create_history_state()
+
     def consume_TransitionExpression(self, transition):
         src = transition.src
-        if not isinstance(src, str):
-            src = src.name
-        if src == "[*]":
-            src_state = self._active_parent.create_initial_state()
-        else:
-            src_state = self.get_or_add_state(src)
+        src_type = self.tname(src)
+        src_state = None
+        if src_type == "str":
+            if src == "[*]":
+                src_state = self._active_parent.create_initial_state()
+        elif src_type == "RegularState":
+            src_state = self.get_or_add_state(src.name)
+        elif src_type == "HistoryState":
+            src_state = self.create_history_state(dst, self._active_parent)
+        if not src_state:
+            raise TypeError(f"Source state type {src_type} of state {src} not handled!")
 
         dst = transition.dest
-        if dst == "[*]":
-            dst_state = self._active_parent.create_final_state()
-        else:
+        dst_type = self.tname(dst)
+        dst_state = None
+        if dst_type == "str":
+            if dst == "[*]":
+                dst_state = self._active_parent.create_final_state()
+        elif dst_type == "RegularState":
             if dst.type:
                 dst_state = self.create_pseudo_state(dst.name, dst.type.type)
             else:
                 dst_state = self.get_or_add_state(dst.name)
+        elif dst_type == "HistoryState":
+            dst_state = self.create_history_state(dst, self._active_parent)
+        elif dst_type == "NestedHistoryState":
+            parent_state = self.get_or_add_state(dst.parent_name)
+            regions = parent_state.get_regions()
+            if len(regions) > 1:
+                raise Exception("Can't transform history state in parent state with more than one region")
+            dst_state = self.create_history_state(dst.history, regions[0])
+        if not dst_state:
+            raise TypeError(f"Destination state type {dst_type} of state {dst} not handled!")
+
         t = Transition(transition.description)
         t.source = src_state
         t.destination = dst_state
