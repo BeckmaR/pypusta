@@ -1,3 +1,5 @@
+[![Build](https://github.com/BeckmaR/pypusta/actions/workflows/python-app.yml/badge.svg)](https://github.com/BeckmaR/pypusta/actions/workflows/python-app.yml)
+
 # pypusta
 
 Pusta is the **P**lant **U**ML **Sta**te diagram parser.
