@@ -195,7 +195,7 @@ class CGeneratorContext:
 
         states = self.statechart.get_contents_of_type(AbstractState)
         for s in states:
-            enum.append(s.name)
+            enum.append(s.fqn())
 
         self._state_enum = enum
         return str(enum)
