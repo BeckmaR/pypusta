@@ -64,13 +64,3 @@ def test_c_generator(file):
     gen_context = generator.generate(statechart, config)
     add_main_file(gen_dir, gen_context)
     do_compile(gen_dir, gen_context)
-
-    if test_func_name in gs:
-        test_func = gs[test_func_name]
-        test_func(statechart, generator, config)
-    else:
-        pytest.skip(f"{test_func_name} not available")
-
-
-def do_test_gen_simple_state(statechart, generator, config):
-    generator.generate(statechart, config)
