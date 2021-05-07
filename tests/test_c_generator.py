@@ -1,8 +1,11 @@
 import pusta
 from pusta.generator.cgen import CGenerator, CGeneratorConfig
 import os
+import subprocess
 import logging
 from inspect import getdoc
+
+import textwrap
 
 import pytest
 
@@ -21,23 +24,50 @@ with open(os.path.join(out_dir, ".gitignore"), 'w') as gitignore:
 
 logger = logging.getLogger(__name__)
 
+
+def add_main_file(gen_dir, gen_context):
+    header = os.path.basename(gen_context.h_path)
+
+    src = f"""
+    #include "{header}"
+
+    int main(int argc, char **argv) {{
+        return 0;
+    }}
+    """
+
+    with open(os.path.join(gen_dir, "main.c"), 'w') as m:
+        m.write(textwrap.dedent(src))
+
+
+def do_compile(gen_dir, gen_context):
+    out = gen_context.name
+    src = os.path.basename(gen_context.c_path)
+    subprocess.run(["gcc", "-o", out, "main.c", src], cwd=gen_dir, check=True)
+
+
 def test_c_generator(file):
     gs = globals()
 
     name, ext = os.path.splitext(file)
     path, name = os.path.split(name)
     assert ext == ".pu"
-    d = os.path.join(out_dir, name)
+    gen_dir = os.path.join(out_dir, name)
 
     test_func_name = f"do_test_gen_{name}"
 
+    generator = CGenerator()
+
+    diagram = parser.parse_file(file)
+    statechart = diagram.transform()
+    config = CGeneratorConfig(gen_dir, name)
+    gen_context = generator.generate(statechart, config)
+    add_main_file(gen_dir, gen_context)
+    do_compile(gen_dir, gen_context)
+
     if test_func_name in gs:
         test_func = gs[test_func_name]
-        diagram = parser.parse_file(file)
-        statechart = diagram.transform()
-        config = CGeneratorConfig(d, name)
-        generator = CGenerator()
-        gs[test_func_name](statechart, generator, config)
+        test_func(statechart, generator, config)
     else:
         pytest.skip(f"{test_func_name} not available")
 
