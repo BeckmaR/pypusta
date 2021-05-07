@@ -1,6 +1,8 @@
 from pusta.generator import Generator, GeneratorConfig
 from pusta.statechart import *
 
+import os
+
 
 class IndentedWriter:
     def __init__(self, indent=4*' '):
@@ -173,6 +175,7 @@ class CGeneratorContext:
             self.h_path = self.config.h_file.name
             self.c_path = self.config.c_file.name
             self.make_header()
+            self.make_source()
 
     def make_header(self):
         header = self.config.h_file
@@ -180,6 +183,11 @@ class CGeneratorContext:
         header.write(self.make_state_enum())
         header.write('\n')
         header.write(self.make_context_struct())
+
+    def make_source(self):
+        src = self.config.c_file
+
+        src.write(f"#include \"{os.path.basename(self.h_path)}\"")
 
     def make_state_enum(self):
         enum = CEnum(_prefix("states", self.name), prefix=self.name)
