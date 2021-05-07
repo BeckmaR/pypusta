@@ -38,6 +38,11 @@ def _prefix(s, prefix):
         return s
 
 
+def _c_escape(s):
+    s = s.replace('.', '_')
+    return s
+
+
 class CEnum:
     def __init__(self, name, enumerators=None, prefix=None):
         self._name = name
@@ -50,7 +55,7 @@ class CEnum:
         self._enumerators.append(enumerator)
 
     def _make_enumerator(self, e):
-        return _prefix(e, self._prefix).upper()
+        return _c_escape(_prefix(e, self._prefix).upper())
 
     def __str__(self):
         writer = IndentedWriter()
