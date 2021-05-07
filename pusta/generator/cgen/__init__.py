@@ -193,7 +193,7 @@ class CGeneratorContext:
         enum = CEnum(_prefix("states", self.name), prefix=self.name)
         enum.append("no_state")
 
-        states = self.statechart.get_contents_of_type(State)
+        states = self.statechart.get_contents_of_type(AbstractState)
         for s in states:
             enum.append(s.name)
 
