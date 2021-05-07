@@ -142,6 +142,22 @@ class CStruct:
         return str(writer)
 
 
+class CComment:
+    def __init__(self):
+        self.lines = []
+
+    def append(self, s):
+        for line in s.splitlines():
+            self.lines.append(line)
+
+    def __str__(self):
+        s = "/*\n"
+        for line in self.lines:
+            s += f" * {line}\n"
+        s += " */"
+        return s
+
+
 class CGeneratorConfig(GeneratorConfig):
     def __init__(self, out_dir, name):
         super().__init__(out_dir, name)
