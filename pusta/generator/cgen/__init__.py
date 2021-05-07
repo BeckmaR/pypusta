@@ -201,6 +201,9 @@ class CGeneratorContext:
     def make_header(self):
         header = self.config.h_file
 
+        header.write(self.make_file_comment())
+        header.write('\n')
+        header.write('\n')
         header.write(self.make_state_enum())
         header.write('\n')
         header.write(self.make_context_struct())
@@ -220,6 +223,11 @@ class CGeneratorContext:
 
         self._state_enum = enum
         return str(enum)
+
+    def make_file_comment(self):
+        comment = CComment()
+        comment.append(str(self.statechart))
+        return str(comment)
 
     def make_event_enum(self):
         return ""
