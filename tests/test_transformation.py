@@ -120,12 +120,12 @@ def do_test_transform_composite_states_1(statechart):
         State A:
             Region 0:
                 State X:
-                    Transition -> B.0.Z
+                    Transition -> Z
                 State Y
         State B:
             Region 0:
                 State Z:
-                    Transition -> A.0.Y
+                    Transition -> Y
     """
 
 
@@ -135,23 +135,23 @@ def do_test_transform_composite_states_2(statechart):
         InitialState:
             Transition -> NotShooting
         State Configuring:
-            Transition -> NotShooting.0.Idle
+            Transition -> Idle
             Region 0:
                 InitialState:
-                    Transition -> Configuring.0.NewValueSelection
+                    Transition -> NewValueSelection
                 State NewValuePreview:
-                    Transition -> Configuring.0.NewValueSelection
-                    Transition -> Configuring.0.NewValueSelection
+                    Transition -> NewValueSelection
+                    Transition -> NewValueSelection
                     Region 0:
                         State State1:
-                            Transition -> Configuring.0.NewValuePreview.0.State2
+                            Transition -> State2
                         State State2
                 State NewValueSelection:
-                    Transition -> Configuring.0.NewValuePreview
+                    Transition -> NewValuePreview
         State NotShooting:
             Region 0:
                 InitialState:
-                    Transition -> NotShooting.0.Idle
+                    Transition -> Idle
                 State Idle:
                     Transition -> Configuring
     """
@@ -180,22 +180,22 @@ def do_test_transform_blank_state_decl(statechart):
     """
     Statechart:
         InitialState:
-            Transition -> Somp.0.entry1
+            Transition -> entry1
         State Foo
         State Foo1:
-            Transition -> Somp.0.entry2
+            Transition -> entry2
         State Somp:
             Region 0:
                 EntryPoint entry1:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 EntryPoint entry2:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 ExitPoint exitA:
                     Transition -> Foo
                 State sin:
-                    Transition -> Somp.0.sin2
+                    Transition -> sin2
                 State sin2:
-                    Transition -> Somp.0.exitA
+                    Transition -> exitA
     """
 
 
@@ -203,22 +203,22 @@ def do_test_transform_entry_exit_point(statechart):
     """
     Statechart:
         InitialState:
-            Transition -> Somp.0.entry1
+            Transition -> entry1
         State Foo
         State Foo1:
-            Transition -> Somp.0.entry2
+            Transition -> entry2
         State Somp:
             Region 0:
                 EntryPoint entry1:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 EntryPoint entry2:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 ExitPoint exitA:
                     Transition -> Foo
                 State sin:
-                    Transition -> Somp.0.sin2
+                    Transition -> sin2
                 State sin2:
-                    Transition -> Somp.0.exitA
+                    Transition -> exitA
     """
 
 
@@ -226,22 +226,22 @@ def do_test_transform_inline_pseudostate(statechart):
     """
     Statechart:
         InitialState:
-            Transition -> Somp.0.entry1
+            Transition -> entry1
         State Foo
         State Foo1:
-            Transition -> Somp.0.entry2
+            Transition -> entry2
         State Somp:
             Region 0:
                 EntryPoint entry1:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 EntryPoint entry2:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 ExitPoint exitA:
                     Transition -> Foo
                 State sin:
-                    Transition -> Somp.0.sin2
+                    Transition -> sin2
                 State sin2:
-                    Transition -> Somp.0.exitA
+                    Transition -> exitA
     """
 
 
@@ -249,22 +249,22 @@ def do_test_transform_entry_exit_pin(statechart):
     """
     Statechart:
         InitialState:
-            Transition -> Somp.0.entry1
+            Transition -> entry1
         State Foo
         State Foo1:
-            Transition -> Somp.0.entry2
+            Transition -> entry2
         State Somp:
             Region 0:
                 EntryPoint entry1:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 EntryPoint entry2:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 ExitPoint exitA:
                     Transition -> Foo
                 State sin:
-                    Transition -> Somp.0.sin2
+                    Transition -> sin2
                 State sin2:
-                    Transition -> Somp.0.exitA
+                    Transition -> exitA
     """
 
 
@@ -272,22 +272,22 @@ def do_test_transform_expansions(statechart):
     """
     Statechart:
         InitialState:
-            Transition -> Somp.0.entry1
+            Transition -> entry1
         State Foo
         State Foo1:
-            Transition -> Somp.0.entry2
+            Transition -> entry2
         State Somp:
             Region 0:
                 EntryPoint entry1:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 EntryPoint entry2:
-                    Transition -> Somp.0.sin
+                    Transition -> sin
                 ExitPoint exitA:
                     Transition -> Foo
                 State sin:
-                    Transition -> Somp.0.sin2
+                    Transition -> sin2
                 State sin2:
-                    Transition -> Somp.0.exitA
+                    Transition -> exitA
     """
 
 
@@ -297,31 +297,31 @@ def do_test_transform_transition_description(statechart):
         InitialState:
             Transition -> NotShooting
         State Configuring:
-            Transition -> NotShooting.0.Idle:
+            Transition -> Idle:
                 Label:
                     EvConfig
             Region 0:
                 InitialState:
-                    Transition -> Configuring.0.NewValueSelection
+                    Transition -> NewValueSelection
                 State NewValuePreview:
-                    Transition -> Configuring.0.NewValueSelection:
+                    Transition -> NewValueSelection:
                         Label:
                             EvNewValueRejected
-                    Transition -> Configuring.0.NewValueSelection:
+                    Transition -> NewValueSelection:
                         Label:
                             EvNewValueSaved
                     Region 0:
                         State State1:
-                            Transition -> Configuring.0.NewValuePreview.0.State2
+                            Transition -> State2
                         State State2
                 State NewValueSelection:
-                    Transition -> Configuring.0.NewValuePreview:
+                    Transition -> NewValuePreview:
                         Label:
                             EvNewValue
         State NotShooting:
             Region 0:
                 InitialState:
-                    Transition -> NotShooting.0.Idle
+                    Transition -> Idle
                 State Idle:
                     Transition -> Configuring:
                         Label:
@@ -360,14 +360,14 @@ def do_test_transform_long_state_names(statechart):
                     Aborted
             Region 0:
                 InitialState:
-                    Transition -> State3.0.long1
+                    Transition -> long1
                 State long1:
                     Label:
                         Just a test
-                    Transition -> State3.0.long1:
+                    Transition -> long1:
                         Label:
                             New Data
-                    Transition -> State3.0.ProcessData:
+                    Transition -> ProcessData:
                         Label:
                             Enough Data
                 State ProcessData
@@ -508,14 +508,14 @@ def do_test_transform_inline_color(statechart):
                 State HardwareSetup:
                     Region 0:
                         State Controller:
-                            Transition -> CurrentSite.0.HardwareSetup.0.Devices
+                            Transition -> Devices
                         State Devices
                         State Site:
-                            Transition -> CurrentSite.0.HardwareSetup.0.Controller
+                            Transition -> Controller
                 State PresentationSetup:
                     Region 0:
                         State Groups:
-                            Transition -> CurrentSite.0.PresentationSetup.0.PlansAndGraphics
+                            Transition -> PlansAndGraphics
                         State PlansAndGraphics
                 State Schedule
                 State Trends
@@ -579,16 +579,16 @@ def do_test_transform_history_states(statechart):
                     Aborted
             Region 0:
                 InitialState:
-                    Transition -> State3.0.long1
+                    Transition -> long1
                 DeepHistoryState
                 HistoryState
                 State long1:
                     Label:
                         Just a test
-                    Transition -> State3.0.long1:
+                    Transition -> long1:
                         Label:
                             New Data
-                    Transition -> State3.0.ProcessData:
+                    Transition -> ProcessData:
                         Label:
                             Enough Data
                 State ProcessData
@@ -604,35 +604,35 @@ def do_test_transform_concurrent_state_horizontal(statechart):
         State Active:
             Region 0:
                 InitialState:
-                    Transition -> Active.0.NumLockOff
+                    Transition -> NumLockOff
                 State NumLockOff:
-                    Transition -> Active.0.NumLockOn:
+                    Transition -> NumLockOn:
                         Label:
                             EvNumLockPressed
                 State NumLockOn:
-                    Transition -> Active.0.NumLockOff:
+                    Transition -> NumLockOff:
                         Label:
                             EvNumLockPressed
             Region 1:
                 InitialState:
-                    Transition -> Active.1.CapsLockOff
+                    Transition -> CapsLockOff
                 State CapsLockOff:
-                    Transition -> Active.1.CapsLockOn:
+                    Transition -> CapsLockOn:
                         Label:
                             EvCapsLockPressed
                 State CapsLockOn:
-                    Transition -> Active.1.CapsLockOff:
+                    Transition -> CapsLockOff:
                         Label:
                             EvCapsLockPressed
             Region 2:
                 InitialState:
-                    Transition -> Active.2.ScrollLockOff
+                    Transition -> ScrollLockOff
                 State ScrollLockOff:
-                    Transition -> Active.2.ScrollLockOn:
+                    Transition -> ScrollLockOn:
                         Label:
                             EvCapsLockPressed
                 State ScrollLockOn:
-                    Transition -> Active.2.ScrollLockOff:
+                    Transition -> ScrollLockOff:
                         Label:
                             EvCapsLockPressed
     """
@@ -646,35 +646,35 @@ def do_test_transform_concurrent_state_vertical(statechart):
         State Active:
             Region 0:
                 InitialState:
-                    Transition -> Active.0.NumLockOff
+                    Transition -> NumLockOff
                 State NumLockOff:
-                    Transition -> Active.0.NumLockOn:
+                    Transition -> NumLockOn:
                         Label:
                             EvNumLockPressed
                 State NumLockOn:
-                    Transition -> Active.0.NumLockOff:
+                    Transition -> NumLockOff:
                         Label:
                             EvNumLockPressed
             Region 1:
                 InitialState:
-                    Transition -> Active.1.CapsLockOff
+                    Transition -> CapsLockOff
                 State CapsLockOff:
-                    Transition -> Active.1.CapsLockOn:
+                    Transition -> CapsLockOn:
                         Label:
                             EvCapsLockPressed
                 State CapsLockOn:
-                    Transition -> Active.1.CapsLockOff:
+                    Transition -> CapsLockOff:
                         Label:
                             EvCapsLockPressed
             Region 2:
                 InitialState:
-                    Transition -> Active.2.ScrollLockOff
+                    Transition -> ScrollLockOff
                 State ScrollLockOff:
-                    Transition -> Active.2.ScrollLockOn:
+                    Transition -> ScrollLockOn:
                         Label:
                             EvCapsLockPressed
                 State ScrollLockOn:
-                    Transition -> Active.2.ScrollLockOff:
+                    Transition -> ScrollLockOff:
                         Label:
                             EvCapsLockPressed
     """

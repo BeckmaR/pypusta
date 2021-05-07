@@ -114,6 +114,11 @@ class NamedNode(BaseNode):
             return super()._cmp(other)
 
 
+class UniqueNamedNode(NamedNode):
+    def fqn(self):
+        return self.name
+
+
 class Label(BaseNode):
     def __init__(self, label: str):
         super().__init__()
@@ -177,8 +182,8 @@ class StateContainer(BaseNode):
         self._history_state = None
         self._deep_history_state = None
 
-    def get_states(self) -> List['State']:
-        return self.get_children_of_type(State)
+    def get_states(self) -> List['AbstractState']:
+        return self.get_children_of_type(AbstractState)
 
     @property
     def initial_state(self) -> 'InitialState':
@@ -225,12 +230,16 @@ class StateContainer(BaseNode):
         return self._deep_history_state
 
 
-class State(NamedNode, LabeledNode):
+class AbstractState(NamedNode, LabeledNode):
     def get_transitions(self) -> List['Transition']:
         return self.get_children_of_type(Transition)
 
     def get_regions(self) -> List['Region']:
         return self.get_children_of_type(Region)
+
+
+class State(AbstractState, UniqueNamedNode):
+    pass
 
 
 class Transition(LabeledNode):
@@ -261,7 +270,7 @@ class Transition(LabeledNode):
         return f"{self.__class__.__name__} -> {self.destination.fqn()}"
 
 
-class PseudoState(State):
+class PseudoState(AbstractState):
     def __init__(self):
         super().__init__(self.__class__.__name__)
 
@@ -309,7 +318,7 @@ class Statechart(StateContainer):
     pass
 
 
-_cls_sort_order = [Label, Transition, Region, InitialState, State, FinalState, NamedNode, BaseNode, object]
+_cls_sort_order = [Label, Transition, Region, InitialState, PseudoState, State, FinalState, NamedNode, BaseNode, object]
 
 
 def _merge(mros):
