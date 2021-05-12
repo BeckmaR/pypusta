@@ -237,6 +237,9 @@ class AbstractState(NamedNode, LabeledNode):
     def get_regions(self) -> List['Region']:
         return self.get_children_of_type(Region)
 
+    def is_leaf(self):
+        return len(self.get_contents_of_type(AbstractState)) == 0
+
 
 class State(AbstractState, UniqueNamedNode):
     pass

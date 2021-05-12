@@ -43,7 +43,7 @@ def add_main_file(gen_dir, gen_context):
 def do_compile(gen_dir, gen_context):
     out = gen_context.name
     src = os.path.basename(gen_context.c_path)
-    subprocess.run(["gcc", "-o", out, "main.c", src], cwd=gen_dir, check=True)
+    subprocess.run(["gcc", "-Werror", "-o", out, "main.c", src], cwd=gen_dir, check=True)
 
 
 def test_c_generator(file):

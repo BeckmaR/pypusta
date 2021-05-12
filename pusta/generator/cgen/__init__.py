@@ -1,34 +1,11 @@
 from pusta.generator import Generator, GeneratorConfig
+from pusta.generator.cgen.ctypes import *
+from pusta.generator.cgen.model import *
 from pusta.statechart import *
 
+import logging
+
 import os
-
-
-class IndentedWriter:
-    def __init__(self, indent=4*' '):
-        self._indent = indent
-        self._cur_indent = 0
-        self.lines = []
-
-    def incr(self):
-        self._cur_indent += 1
-
-    def decr(self):
-        if self._cur_indent > 0:
-            self._cur_indent -= 1
-
-    def _add_line(self, l):
-        self.lines.append((self._cur_indent * self._indent) + l.strip())
-
-    def append(self, s):
-        for l in s.splitlines():
-            self._add_line(l)
-
-    def __str__(self):
-        s = ''
-        for line in self.lines:
-            s += line + '\n'
-        return s
 
 
 def _prefix(s, prefix):
@@ -43,43 +20,65 @@ def _c_escape(s):
     return s
 
 
-class CEnum:
-    def __init__(self, name, enumerators=None, prefix=None):
-        self._name = name
-        self._prefix = prefix
-        if not enumerators:
-            enumerators = []
-        self._enumerators = enumerators
+class CSwitch:
+    def __init__(self, var, cases=None):
+        if not cases:
+            cases = {}
+        self._var = var
+        self._cases = cases
 
-    def append(self, enumerator):
-        self._enumerators.append(enumerator)
-
-    def _make_enumerator(self, e):
-        return _c_escape(_prefix(e, self._prefix).upper())
+    @property
+    def cases(self):
+        return self._cases
 
     def __str__(self):
-        writer = IndentedWriter()
-
-        s = f"enum {self._name} {{"
-        writer.append(s)
-        writer.incr()
-        writer.append(",\n".join([self._make_enumerator(e)
-                      for e in self._enumerators]))
-        writer.decr()
-        writer.append("};")
-        return str(writer)
+        w = IndentedWriter()
+        w.append(f"switch ({self._var}) {{")
+        w.incr()
+        for case, exprs in self._cases.items():
+            if case != "default":
+                w.append(f"case {case}:")
+            else:
+                w.append("default:")
+            w.incr()
+            for e in exprs:
+                w.append(e)
+            w.decr()
+        w.decr()
+        w.append('}')
+        return str(w)
 
 
 class CDecl:
-    def __init__(self, type, name, static=False, pointer_level=0):
+    def __init__(self, type: Type, name, static=False, pointer_level=0):
         self._type = type
         self._name = name
         self._static = static
-        self._plevel = 0
+        self._plevel = pointer_level
+
+    def __str__(self):
+        s = "static " if self._static else ""
+        s += f"{self._type.name} {self._plevel * '*'}{self._name}"
+        return s
+
+    def pointer(self):
+        self._plevel += 1
+        return self
+
+    @property
+    def name(self):
+        return self._name
+
+
+class CParam(CDecl):
+    def __init__(self, type: Type, name, pointer_level=0):
+        super().__init__(type, name, static=False, pointer_level=pointer_level)
 
 
 class CFunc(CDecl):
-    def __init__(self, name, parameters=None, expressions=None, ret_type='void', static=False):
+    def __init__(self, name, parameters=None, expressions=None, ret_type=None, static=False):
+        if not ret_type:
+            ret_type = type_registry['void']
         if not parameters:
             parameters = []
         if not expressions:
@@ -87,6 +86,7 @@ class CFunc(CDecl):
         super().__init__(type=ret_type, name=name, static=static)
         self._params = parameters
         self._exprs = expressions
+        self._ret_type = ret_type
 
     @property
     def expressions(self):
@@ -97,19 +97,14 @@ class CFunc(CDecl):
         return self._params
 
     def _do_declare(self):
-        tokens = []
-        if self._static:
-            tokens.append("static")
-        tokens.append(self._ret_type)
-        tokens.append(self._plevel * '*' + self._name + f"({', '.join(self._params)})")
-        return " ".join(tokens)
+        return f"{super().__str__()}({', '.join([str(p) for p in self._params])})"
 
     def declare(self):
-        return f"{self._do_declare};"
+        return f"{self._do_declare()};"
 
     def __str__(self):
         writer = IndentedWriter()
-        writer.append(self._do_declare + " {")
+        writer.append(self._do_declare() + " {")
         writer.incr()
         for e in self._exprs:
             writer.append(str(e))
@@ -117,34 +112,17 @@ class CFunc(CDecl):
         writer.append("}")
         return str(writer)
 
+    def __call__(self, *args, **kwargs):
+        return f"{self.name}({', '.join([str(a) for a in args])})"
 
-class CStruct:
-    def __init__(self, name, members=None):
-        if not members:
-            members = []
-        self._name = name
-        self._members = members
-
-    @property
-    def members(self):
-        return self._members
-
-    def __str__(self):
-        writer = IndentedWriter()
-        writer.append(f"struct {self._name} {{")
-        writer.incr()
-        for m in self._members:
-            if isinstance(m, str):
-                m = m.rstrip(';')
-            writer.append(f"{m};")
-        writer.decr()
-        writer.append("};")
-        return str(writer)
 
 
 class CComment:
-    def __init__(self):
+    def __init__(self, content=None):
         self.lines = []
+        if content:
+            for line in str(content).splitlines():
+                self.lines.append(line)
 
     def append(self, s):
         for line in s.splitlines():
@@ -191,6 +169,33 @@ class CGeneratorContext:
         self.config = config
         self.name = config.name
 
+        self._logger = logging.getLogger(self.__class__.__name__)
+
+        self._state_enum = None
+        self._context_struct = None
+        self._run_cycle_func = None
+
+        self._state_handlers = dict()
+        states = self.statechart.get_contents_of_type(AbstractState)
+        for state in states:
+            handler = CStateHandler(state)
+            self._state_handlers[state] = handler
+            self._logger.debug(f"Creating handler for state {state.fqn()}")
+            if (parent := state.get_parent_of_type(AbstractState)) is not None:
+                handler.parent = self._state_handlers[parent]
+                handler.parent.children.append(handler)
+
+        for state in states:
+            self._make_state_eval_fn(state)
+            self._make_state_entry_fn(state)
+
+    def _write(self, file, content, newlines=1):
+        if not isinstance(content, str):
+            content = str(content)
+
+        file.write(content.strip())
+        file.write('\n' * (newlines + 1))
+
     def generate(self):
         with self.config.open():
             self.h_path = self.config.h_file.name
@@ -201,28 +206,34 @@ class CGeneratorContext:
     def make_header(self):
         header = self.config.h_file
 
-        header.write(self.make_file_comment())
-        header.write('\n')
-        header.write('\n')
-        header.write(self.make_state_enum())
-        header.write('\n')
-        header.write(self.make_context_struct())
+        self._write(header, self.make_file_comment(), 2)
+        self._write(header, self.state_enum)
+        self._write(header, self.context_struct)
+        self._write(header, self.run_cycle.declare())
 
     def make_source(self):
         src = self.config.c_file
 
-        src.write(f"#include \"{os.path.basename(self.h_path)}\"")
+        self._write(src, f"#include \"{os.path.basename(self.h_path)}\"", newlines=2)
+        for handler in self._state_handlers.values():
+            self._write(src, handler.entry)
+            self._write(src, handler.evaluate)
+        self._write(src, self.run_cycle)
 
-    def make_state_enum(self):
-        enum = CEnum(_prefix("states", self.name), prefix=self.name)
-        enum.append("no_state")
+    def _make_state_enum(self):
+        def _enumerator(e):
+            return _c_escape(_prefix(e, self.name).upper())
 
-        states = self.statechart.get_contents_of_type(AbstractState)
-        for s in states:
-            enum.append(s.fqn())
+        enum = CEnum(_prefix("states", self.name))
+        enum.members.append(_enumerator("no_state"))
 
-        self._state_enum = enum
-        return str(enum)
+        for s, h in self._state_handlers.items():
+            e = _enumerator(s.fqn())
+            self._logger.debug(f"Making enumerator {e}")
+            enum.members.append(e)
+            h.enumerator = e
+
+        return enum
 
     def make_file_comment(self):
         comment = CComment()
@@ -232,7 +243,76 @@ class CGeneratorContext:
     def make_event_enum(self):
         return ""
 
-    def make_context_struct(self):
+    def _make_context_struct(self):
         s = CStruct(_prefix("context", self.name))
-        s.members.append(f"enum {self._state_enum._name} active_state")
-        return str(s)
+        s.members.append(f"{self.state_enum.name} active_state")
+        return s
+
+    def _ctx_param(self):
+        return CParam(self.context_struct, "ctx").pointer()
+
+    def _make_run_cycle(self):
+        f = CFunc(_prefix("run_cycle", self.name))
+        ctx = self._ctx_param()
+        f.parameters.append(ctx)
+        sw = CSwitch(f"{ctx.name}->active_state")
+        for handler in self._state_handlers.values():
+            if handler.original_state.is_leaf():
+                sw.cases[handler.enumerator] = [
+                    f"// State {handler.original_state.fqn()}",
+                    f"{handler.evaluate(ctx.name)};",
+                    "break;"
+                ]
+        f.expressions.append(sw)
+        return f
+
+    def _make_state_eval_fn(self, state):
+        handler = self._state_handlers[state]
+        name = _prefix(_prefix("eval", _c_escape(state.fqn())), self.name)
+        param = self._ctx_param()
+        handler.evaluate = CFunc(name, static=True, parameters=[param])
+
+        for transition in state.get_transitions():
+            handler.evaluate.expressions.append(CComment(transition))
+
+        if handler.parent:
+            handler.evaluate.expressions.append("")
+            handler.evaluate.expressions.append(handler.parent.evaluate(param.name) + ';')
+
+    def _make_state_entry_fn(self, state):
+        handler = self._state_handlers[state]
+        name = _prefix(_prefix("entry", _c_escape(state.fqn())), self.name)
+        param = self._ctx_param()
+        handler.entry = CFunc(name, static=True, parameters=[param])
+
+        if handler.parent:
+            handler.entry.expressions.append(handler.parent.entry(param.name) + ";")
+
+    def _make_state_exit_fn(self, state):
+        handler = self._state_handlers[state]
+        name = _prefix(_prefix("exit", _c_escape(state.fqn())), self.name)
+        param = self._ctx_param()
+        handler.entry = CFunc(name, static=True, parameters=[param])
+
+        if handler.parent:
+            handler.entry.expressions.append(handler.parent.exit(param.name) + ";")
+
+    @property
+    def state_enum(self):
+        if self._state_enum is None:
+            self._logger.debug("Creating state enum")
+            self._state_enum = self._make_state_enum()
+        return self._state_enum
+
+    @property
+    def context_struct(self):
+        if self._context_struct is None:
+            self._context_struct = self._make_context_struct()
+        return self._context_struct
+
+    @property
+    def run_cycle(self):
+        if self._run_cycle_func is None:
+            self._logger.debug("Creating run cycle function")
+            self._run_cycle_func = self._make_run_cycle()
+        return self._run_cycle_func
